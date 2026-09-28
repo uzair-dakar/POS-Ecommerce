@@ -1,0 +1,186 @@
+import type {
+  CategoryId,
+  ChainId,
+  HomeFeed,
+  Merchant,
+  MerchantId,
+  ProductId,
+} from '../../types';
+
+/**
+ * Fixture data shaped exactly like the future API response. When the real
+ * backend lands, only `services/api/baseQuery.ts` changes — nothing else.
+ */
+const img = (id: string, w = 600) =>
+  `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
+
+const merchant = (m: Omit<Merchant, 'kind'> & { kind: Merchant['kind'] }): Merchant => m;
+
+export const MOCK_MERCHANTS: readonly Merchant[] = [
+  merchant({
+    id: 'm_copper_kettle' as MerchantId,
+    kind: 'restaurant',
+    name: 'Copper Kettle',
+    tagline: 'Comfort food, generous portions.',
+    imageUrl: img('1568901346375-23c9450c58cd'),
+    rating: 4.5,
+    deliveryFee: 0,
+    deliveryMinMinutes: 25,
+    deliveryMaxMinutes: 40,
+    minOrder: 800,
+    isOpen: true,
+    closesAt: '23:00',
+    offerLabel: 'Free delivery',
+    tags: ['Burgers', 'Comfort'],
+  }),
+  merchant({
+    id: 'm_saigon_alley' as MerchantId,
+    kind: 'restaurant',
+    name: 'Saigon Alley',
+    tagline: 'Bright Vietnamese street food.',
+    imageUrl: img('1559314809-0d155014e29e'),
+    rating: 4.7,
+    deliveryFee: 0,
+    deliveryMinMinutes: 30,
+    deliveryMaxMinutes: 45,
+    minOrder: 1000,
+    isOpen: true,
+    closesAt: '22:30',
+    offerLabel: '20% off',
+    tags: ['Vietnamese', 'Noodles'],
+  }),
+  merchant({
+    id: 'm_malted_oat' as MerchantId,
+    kind: 'restaurant',
+    name: 'The Malted Oat',
+    tagline: 'Fresh breakfast delivered quickly.',
+    imageUrl: img('1565958011703-44f9829ba187'),
+    rating: 4.9,
+    deliveryFee: 0,
+    deliveryMinMinutes: 10,
+    deliveryMaxMinutes: 15,
+    minOrder: 600,
+    isOpen: true,
+    closesAt: '16:00',
+    offerLabel: 'Fastest',
+    tags: ['Breakfast', 'Bakery'],
+  }),
+  merchant({
+    id: 'm_casa_pomodoro' as MerchantId,
+    kind: 'restaurant',
+    name: 'Casa Pomodoro',
+    tagline: 'Fresh pizza cooked over wood.',
+    imageUrl: img('1513104890138-7c749659a591'),
+    rating: 4.6,
+    deliveryFee: 0,
+    deliveryMinMinutes: 15,
+    deliveryMaxMinutes: 25,
+    minOrder: 900,
+    isOpen: true,
+    closesAt: '23:30',
+    offerLabel: 'Fastest',
+    tags: ['Pizza', 'Italian'],
+  }),
+  merchant({
+    id: 'm_buzztill_qormi' as MerchantId,
+    kind: 'market',
+    name: 'Buzztill Market Qormi',
+    tagline: 'Fresh groceries. Delivered.',
+    imageUrl: img('1610832958506-aa56368176cf'),
+    rating: 9.4,
+    deliveryFee: 0,
+    deliveryMinMinutes: 55,
+    deliveryMaxMinutes: 65,
+    minOrder: 2000,
+    isOpen: true,
+    closesAt: '24:00',
+    offerLabel: '3 for 2 · Summer',
+    tags: ['Groceries'],
+  }),
+  merchant({
+    id: 'm_welbees' as MerchantId,
+    kind: 'market',
+    name: "Welbee's Supermarket",
+    tagline: 'Your local shop with leading brands.',
+    imageUrl: img('1542838132-92c53300491e'),
+    rating: 9.2,
+    deliveryFee: 0,
+    deliveryMinMinutes: 60,
+    deliveryMaxMinutes: 70,
+    minOrder: 2000,
+    isOpen: true,
+    closesAt: '22:00',
+    offerLabel: '2 for €1 off',
+    tags: ['Groceries'],
+  }),
+  merchant({
+    id: 'm_little_greens' as MerchantId,
+    kind: 'market',
+    name: 'Little Greens',
+    tagline: 'Get the best for less!',
+    imageUrl: img('1584680226833-0d680d0a0794'),
+    rating: 8.8,
+    deliveryFee: 0,
+    deliveryMinMinutes: 40,
+    deliveryMaxMinutes: 50,
+    minOrder: 1500,
+    isOpen: true,
+    closesAt: '21:00',
+    offerLabel: 'Your fave drink = €1 off',
+    tags: ['Groceries'],
+  }),
+];
+
+const byId = (id: string) => MOCK_MERCHANTS.find(m => m.id === id)!;
+
+export const MOCK_HOME_FEED: HomeFeed = {
+  deliverTo: 'Valletta',
+  categories: [
+    { id: 'c_restaurants' as CategoryId, name: 'Restaurants', imageUrl: img('1414235077428-338989a2e8c0', 200) },
+    { id: 'c_groceries' as CategoryId, name: 'Groceries', imageUrl: img('1542838132-92c53300491e', 200) },
+    { id: 'c_health' as CategoryId, name: 'Health', imageUrl: img('1587854692152-cbe660dbde88', 200) },
+    { id: 'c_beauty' as CategoryId, name: 'Beauty', imageUrl: img('1596462502278-27bfdc403348', 200) },
+    { id: 'c_drinks' as CategoryId, name: 'Drinks', imageUrl: img('1544145945-f90425340c7e', 200) },
+  ],
+  heroPromotions: [
+    {
+      id: 'p_first_order',
+      eyebrow: 'First order treat',
+      title: 'Get it warm.\nGet it now.',
+      subtitle: 'Under 30 min',
+      ctaLabel: 'Start an order',
+      imageUrl: img('1513104890138-7c749659a591', 900),
+      target: { type: 'merchant', id: 'm_casa_pomodoro' as MerchantId },
+    },
+  ],
+  quickPromotions: [
+    {
+      id: 'p_groceries',
+      eyebrow: 'Fresh today',
+      title: 'Groceries at your door',
+      ctaLabel: 'Shop groceries',
+      imageUrl: img('1610832958506-aa56368176cf', 400),
+      target: { type: 'category', id: 'c_groceries' as CategoryId },
+    },
+    {
+      id: 'p_dinner',
+      eyebrow: 'Dinner time',
+      title: 'Dinner sorted',
+      ctaLabel: 'Order now',
+      imageUrl: img('1546069901-ba9599a7e63c', 400),
+      target: { type: 'category', id: 'c_restaurants' as CategoryId },
+    },
+  ],
+  brands: [
+    { id: 'ch_mcdonalds' as ChainId, name: 'McDonalds', logoUrl: img('1619881589558-3ba0a6d8fb60', 200), locationCount: 12 },
+    { id: 'ch_kfc' as ChainId, name: 'KFC', logoUrl: img('1626082927389-6cd097cdc6ec', 200), locationCount: 9 },
+    { id: 'ch_burger_oclock' as ChainId, name: "Burger O'Clock", logoUrl: img('1568901346375-23c9450c58cd', 200), locationCount: 6 },
+  ],
+  popularRestaurants: [byId('m_copper_kettle'), byId('m_saigon_alley')],
+  fastestDelivery: [byId('m_malted_oat'), byId('m_casa_pomodoro')],
+  markets: [byId('m_buzztill_qormi'), byId('m_welbees'), byId('m_little_greens')],
+};
+
+export const MOCK_PRODUCT_IDS = {
+  bananas: 'p_bananas' as ProductId,
+} as const;
