@@ -52,5 +52,7 @@ export function HorizontalList<T>({
 }
 
 const styles = StyleSheet.create({
-  content: { paddingHorizontal: SCREEN_GUTTER },
+  // Vertical padding gives the cards' drop shadows room; without it the
+  // bottom edge of every card is clipped by the scroll container.
+  content: { paddingHorizontal: SCREEN_GUTTER, paddingVertical: spacing.xs },
 });

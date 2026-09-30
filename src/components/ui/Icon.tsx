@@ -33,6 +33,12 @@ const paths = {
   bell: 'M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6M10 20a2 2 0 0 0 4 0',
   calendar: 'M4 6h16v15H4zM4 11h16M8 3v4M16 3v4',
   bolt: 'm13 3-8 10h6l-1 8 8-10h-6z',
+  mail: 'M3 6h18v12H3zM3 7l9 6 9-6',
+  lock: 'M6 11h12v10H6zM9 11V7.5a3 3 0 0 1 6 0V11',
+  phone: 'M7 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L16 12l5 2v3a2 2 0 0 1-2.2 2A16 16 0 0 1 5 5.2 2 2 0 0 1 7 3z',
+  eye: 'M12 5c5 0 9 7 9 7s-4 7-9 7-9-7-9-7 4-7 9-7zM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6z',
+  eyeOff: 'M4 4l16 16M10.2 6.3A8.6 8.6 0 0 1 12 6c5 0 9 6.5 9 6.5a17 17 0 0 1-3.2 3.7M6.6 8.1A17 17 0 0 0 3 12.5S7 19 12 19a8.8 8.8 0 0 0 3.2-.6M9.9 10.4a3 3 0 0 0 4 4.2',
+  shield: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',
 } as const;
 
 export type IconName = keyof typeof paths;
@@ -68,7 +74,7 @@ function IconBase({
 }
 
 /** A filled dot, used for "open now" / live indicators. */
-export const Dot = memo(function Dot({
+export const Dot = memo(function DotBase({
   size = 8,
   color = colors.success,
 }: {

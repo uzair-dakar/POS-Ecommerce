@@ -8,7 +8,6 @@ import {
   type ListRenderItem,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen, HorizontalList } from '../../../components/layout';
@@ -17,6 +16,7 @@ import { BasketBar } from '../../basket/components/BasketBar';
 import { colors, SCREEN_GUTTER, spacing } from '../../../theme';
 import type { CategoryId, Chain, Merchant, Promotion } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
+import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
 
 import { useGetHomeFeedQuery } from '../api/homeApi';
 import { CategoryRail } from '../components/CategoryRail';
@@ -42,20 +42,17 @@ type Section =
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
-/** Floating tab bar height — the feed and basket bar both clear it. */
-const TAB_BAR_CLEARANCE = 78;
-
 export function HomeScreen() {
   const navigation = useNavigation<Navigation>();
   const { width } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
+  const { clearance } = useTabBarMetrics();
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>();
 
   const { data: feed, isLoading, isFetching, isError, refetch } = useGetHomeFeedQuery();
 
   /** refetch() resolves to a query result; callers only need a void handler. */
   const handleRefresh = useCallback(() => {
-    void refetch();
+    refetch();
   }, [refetch]);
 
   /* ---------------------------- interactions ---------------------------- */
@@ -70,15 +67,26 @@ export function HomeScreen() {
     [navigation],
   );
 
+  /** Categories map onto the two merchant kinds the app can list today. */
+  const openCategory = useCallback(
+    (id: CategoryId) => {
+      setSelectedCategory(id);
+      navigation.navigate('MerchantList', {
+        kind: id === ('c_restaurants' as CategoryId) ? 'restaurant' : 'market',
+      });
+    },
+    [navigation],
+  );
+
   const openPromotion = useCallback(
     (promotion: Promotion) => {
       if (promotion.target.type === 'merchant') {
         navigation.navigate('Merchant', { merchantId: promotion.target.id });
       } else {
-        setSelectedCategory(promotion.target.id);
+        openCategory(promotion.target.id);
       }
     },
-    [navigation],
+    [navigation, openCategory],
   );
 
   const openBasket = useCallback(() => navigation.navigate('Basket'), [navigation]);
@@ -117,7 +125,7 @@ export function HomeScreen() {
             <CategoryRail
               categories={feed.categories}
               selectedId={selectedCategory}
-              onSelect={setSelectedCategory}
+              onSelect={openCategory}
             />
           );
 
@@ -219,7 +227,7 @@ export function HomeScreen() {
           );
       }
     },
-    [feed, selectedCategory, width, openPromotion, openChain, renderMerchantRow, navigation],
+    [feed, selectedCategory, width, openCategory, openPromotion, openChain, renderMerchantRow, navigation],
   );
 
   if (isError) {
@@ -255,7 +263,7 @@ export function HomeScreen() {
         ItemSeparatorComponent={SectionSeparator}
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: TAB_BAR_CLEARANCE + insets.bottom + spacing.huge },
+          { paddingBottom: clearance + spacing.xxl },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -271,7 +279,7 @@ export function HomeScreen() {
         removeClippedSubviews
       />
 
-      <BasketBar onPress={openBasket} bottomOffset={TAB_BAR_CLEARANCE + insets.bottom} />
+      <BasketBar onPress={openBasket} bottomOffset={clearance + spacing.md} />
     </Screen>
   );
 }

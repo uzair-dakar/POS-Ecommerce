@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { AppImage, AppText, Icon } from '../../../components/ui';
 import { colors, radii, spacing } from '../../../theme';
 import type { Chain } from '../../../types';
@@ -11,10 +11,16 @@ export type BrandCardProps = {
   onPress: (chain: Chain) => void;
 };
 
-/** Logo tile in the "Brands you love" row. */
+/** Logo tile in the "Brands you love" row; opens the brand's locations. */
 function BrandCardBase({ chain, onPress }: BrandCardProps) {
+  const handlePress = useCallback(() => onPress(chain), [onPress, chain]);
+
   return (
-    <View style={styles.wrapper}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${chain.name}, ${chain.locationCount} locations`}
+      onPress={handlePress}
+      style={({ pressed }) => [styles.wrapper, pressed && styles.pressed]}>
       <AppImage source={{ uri: chain.logoUrl }} style={styles.logo} />
       <View style={styles.labelRow}>
         <AppText variant="captionStrong" numberOfLines={1} style={styles.name}>
@@ -24,7 +30,7 @@ function BrandCardBase({ chain, onPress }: BrandCardProps) {
           <Icon name="chevronRight" size={12} color={colors.accentPressed} strokeWidth={2.4} />
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -41,6 +47,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  pressed: { opacity: 0.85 },
 });
 
-export const BrandCard = memo(BrandCardBase, (prev, next) => prev.chain.id === next.chain.id);
+export const BrandCard = memo(
+  BrandCardBase,
+  (prev, next) => prev.chain === next.chain && prev.onPress === next.onPress,
+);

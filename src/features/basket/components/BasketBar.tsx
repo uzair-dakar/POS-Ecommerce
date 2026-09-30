@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText, Icon } from '../../../components/ui';
 import { colors, radii, shadows, SCREEN_GUTTER, spacing } from '../../../theme';
 import { formatPrice } from '../../../utils';
@@ -8,7 +9,11 @@ import { selectBasketSummary } from '../basketSlice';
 
 export type BasketBarProps = {
   onPress: () => void;
-  /** Lifts the bar above the tab bar / home indicator. */
+  /**
+   * Lifts the bar above whatever sits below it — pass the tab bar's clearance
+   * on a tab screen. Defaults to clearing the gesture bar / nav buttons, which
+   * a stack screen needs on its own.
+   */
   bottomOffset?: number;
 };
 
@@ -17,15 +22,18 @@ export type BasketBarProps = {
  * selector rather than taking props, so screens can drop it in anywhere and
  * it re-renders only when the totals actually change.
  */
-function BasketBarBase({ onPress, bottomOffset = spacing.lg }: BasketBarProps) {
+function BasketBarBase({ onPress, bottomOffset }: BasketBarProps) {
+  const insets = useSafeAreaInsets();
   const { itemCount, total, isEmpty } = useAppSelector(selectBasketSummary);
+
+  const bottom = bottomOffset ?? Math.max(insets.bottom, spacing.sm) + spacing.md;
 
   if (isEmpty) {
     return null;
   }
 
   return (
-    <View style={[styles.wrapper, { bottom: bottomOffset }]} pointerEvents="box-none">
+    <View style={[styles.wrapper, { bottom }]} pointerEvents="box-none">
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`View basket, ${itemCount} items, ${formatPrice(total)}`}

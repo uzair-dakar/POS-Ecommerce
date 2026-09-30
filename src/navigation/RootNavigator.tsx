@@ -2,10 +2,28 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
+import { selectIsAuthenticated } from '../features/auth/authSlice';
+import { useAppSelector } from '../store/hooks';
 import { colors } from '../theme';
+import { AuthNavigator } from './AuthNavigator';
 import { MainTabNavigator } from './MainTabNavigator';
 import type { RootStackParamList } from './types';
+
+import { ChainScreen } from '../features/merchants/screens/ChainScreen';
+import { ChainsScreen } from '../features/merchants/screens/ChainsScreen';
+import { MerchantScreen } from '../features/merchants/screens/MerchantScreen';
+import { MerchantListScreen } from '../features/merchants/screens/MerchantListScreen';
+import { ProductScreen } from '../features/merchants/screens/ProductScreen';
+import { SearchScreen } from '../features/search/screens/SearchScreen';
+import { AddressesScreen } from '../features/account/screens/AddressesScreen';
+import { BasketScreen } from '../features/basket/screens/BasketScreen';
+import { CheckoutScreen } from '../features/orders/screens/CheckoutScreen';
+import { OrderConfirmationScreen } from '../features/orders/screens/OrderConfirmationScreen';
+import { OrderDetailScreen } from '../features/orders/screens/OrderDetailScreen';
+import { OrderTrackingScreen } from '../features/orders/screens/OrderTrackingScreen';
+import { ReservationDateTimeScreen } from '../features/reservations/screens/ReservationDateTimeScreen';
+import { ReservationDetailsScreen } from '../features/reservations/screens/ReservationDetailsScreen';
+import { ReservationConfirmedScreen } from '../features/reservations/screens/ReservationConfirmedScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -22,46 +40,80 @@ const navigationTheme: Theme = {
   },
 };
 
-const Stub = (title: string) => () => <PlaceholderScreen title={title} />;
-
+/**
+ * Which world the user is in. The splash that covers rehydration is handled a
+ * level up by PersistGate, so by the time this renders the stored session —
+ * if there is one — has already been read back.
+ */
 export function RootNavigator() {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
   return (
     <NavigationContainer theme={navigationTheme}>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          // Native stack animations run on the UI thread — no JS-driven jank.
-          animation: 'slide_from_right',
-        }}>
-        <Stack.Screen name="Main" component={MainTabNavigator} />
-
-        <Stack.Screen name="Search" component={Stub('Search')} />
-        <Stack.Screen name="Chains" component={Stub('Brands you love')} />
-        <Stack.Screen name="Chain" component={Stub('Brand locations')} />
-        <Stack.Screen name="MerchantList" component={Stub('All stores')} />
-        <Stack.Screen name="Merchant" component={Stub('Store')} />
-        <Stack.Screen
-          name="Product"
-          component={Stub('Product')}
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
-        />
-
-        <Stack.Screen name="Basket" component={Stub('Your basket')} />
-        <Stack.Screen name="Checkout" component={Stub('Checkout')} />
-        <Stack.Screen name="OrderConfirmation" component={Stub("You're all set!")} />
-        <Stack.Screen name="OrderTracking" component={Stub('Live order')} />
-        <Stack.Screen name="OrderDetail" component={Stub('Order detail')} />
-
-        <Stack.Screen name="ReservationDateTime" component={Stub('Reservation')} />
-        <Stack.Screen name="ReservationDetails" component={Stub('Reservation details')} />
-        <Stack.Screen name="ReservationConfirmed" component={Stub("You're on the list")} />
-
-        <Stack.Screen
-          name="Addresses"
-          component={Stub('Delivery address')}
-          options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
-        />
-      </Stack.Navigator>
+      {isAuthenticated ? <SignedInStack /> : <AuthNavigator />}
     </NavigationContainer>
+  );
+}
+
+/**
+ * Everything behind sign-in. Swapping navigators rather than navigating means
+ * signing out unmounts the whole tree — no signed-in screen can survive in
+ * the back stack, and no "go back into the app" gesture can reach one.
+ */
+function SignedInStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        // Native stack animations run on the UI thread — no JS-driven jank.
+        animation: 'slide_from_right',
+      }}>
+      <Stack.Screen name="Main" component={MainTabNavigator} />
+
+      <Stack.Screen
+        name="Search"
+        component={SearchScreen}
+        // No slide: the search field should feel like it was already there.
+        options={{ animation: 'fade' }}
+      />
+      <Stack.Screen name="Chains" component={ChainsScreen} />
+      <Stack.Screen name="Chain" component={ChainScreen} />
+      <Stack.Screen name="MerchantList" component={MerchantListScreen} />
+      <Stack.Screen name="Merchant" component={MerchantScreen} />
+      <Stack.Screen
+        name="Product"
+        component={ProductScreen}
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
+
+      <Stack.Screen name="Basket" component={BasketScreen} />
+      <Stack.Screen
+        name="Checkout"
+        component={CheckoutScreen}
+        // No back gesture mid-payment: leaving would strand a placed order.
+        options={{ gestureEnabled: false, animation: 'fade' }}
+      />
+      <Stack.Screen
+        name="OrderConfirmation"
+        component={OrderConfirmationScreen}
+        options={{ gestureEnabled: false, animation: 'fade' }}
+      />
+      <Stack.Screen name="OrderTracking" component={OrderTrackingScreen} />
+      <Stack.Screen name="OrderDetail" component={OrderDetailScreen} />
+
+      <Stack.Screen name="ReservationDateTime" component={ReservationDateTimeScreen} />
+      <Stack.Screen name="ReservationDetails" component={ReservationDetailsScreen} />
+      <Stack.Screen
+        name="ReservationConfirmed"
+        component={ReservationConfirmedScreen}
+        options={{ gestureEnabled: false, animation: 'fade' }}
+      />
+
+      <Stack.Screen
+        name="Addresses"
+        component={AddressesScreen}
+        options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+      />
+    </Stack.Navigator>
   );
 }

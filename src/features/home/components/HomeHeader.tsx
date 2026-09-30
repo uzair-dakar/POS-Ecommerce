@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { AppText, Icon, SearchBar } from '../../../components/ui';
+import { AppText, Icon, SearchBar, Wordmark } from '../../../components/ui';
 import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
 
 export type HomeHeaderProps = {
@@ -32,9 +32,7 @@ function HomeHeaderBase({ deliverTo, onChangeAddress, onSearchPress }: HomeHeade
           </View>
         </Pressable>
 
-        <AppText variant="h3" color="textAccent" style={styles.logo}>
-          BUZZ{'\n'}TILL
-        </AppText>
+        <Wordmark size="sm" />
       </View>
 
       <SearchBar
@@ -59,7 +57,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   addressRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  logo: { fontStyle: 'italic', lineHeight: 15, fontSize: 13, textAlign: 'right' },
   search: { marginBottom: spacing.sm },
 });
 

@@ -1,0 +1,5 @@
+<resources>
+    <!-- Mirrors colors.primaryDark in src/theme/colors.ts. Keep them in step:
+         this is what the OS paints before React Native has drawn anything. -->
+    <color name="brand_navy">#06283F</color>
+</resources>

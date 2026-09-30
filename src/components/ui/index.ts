@@ -1,13 +1,17 @@
 export { AppText, type TextProps } from './Text';
 export { Button, type ButtonProps } from './Button';
 export { Card, type CardProps } from './Card';
-export { Chip, type ChipProps } from './Chip';
+export { Chip, type ChipProps, type ChipTone } from './Chip';
+export { Checkbox, type CheckboxProps } from './Checkbox';
 export { Badge, type BadgeProps, type BadgeTone } from './Badge';
 export { Icon, Dot, type IconName, type IconProps } from './Icon';
+export { IconButton, type IconButtonProps } from './IconButton';
 export { Rating } from './Rating';
 export { MetaRow, type MetaItem } from './MetaRow';
 export { AppImage, type AppImageProps } from './AppImage';
 export { Skeleton, type SkeletonProps } from './Skeleton';
 export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
 export { SearchBar, type SearchBarProps } from './SearchBar';
+export { TextField, type TextFieldProps } from './TextField';
 export { QuantityStepper, type QuantityStepperProps } from './QuantityStepper';
+export { Wordmark, type WordmarkProps } from './Wordmark';

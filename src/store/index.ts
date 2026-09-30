@@ -12,23 +12,29 @@ import {
   persistStore,
 } from 'redux-persist';
 import { apiSlice } from '../services/api';
+import { authReducer } from '../features/auth/authSlice';
 import { basketReducer } from '../features/basket/basketSlice';
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
+  auth: authReducer,
   basket: basketReducer,
 });
 
 /**
  * Only client-owned state is persisted. Server data lives in the RTK Query
  * cache and is re-fetched on launch, so it can never go stale on disk.
+ *
+ * `auth.isRestored` is deliberately left out of what comes back: it describes
+ * this launch, not the last one, and must start false so the splash holds
+ * until rehydration finishes.
  */
 const persistedReducer = persistReducer(
   {
     key: 'buzztill-root',
     version: 1,
     storage: AsyncStorage,
-    whitelist: ['basket'],
+    whitelist: ['basket', 'auth'],
   },
   rootReducer,
 );

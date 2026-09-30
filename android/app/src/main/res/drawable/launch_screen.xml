@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The window background the OS paints from the moment the app is tapped until
+  React Native draws its first frame. It repeats the navy ground and logo of
+  the JS splash screen, so the handover is invisible instead of a white flash.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/brand_navy" />
+    <item
+        android:gravity="center"
+        android:width="140dp"
+        android:height="140dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap/ic_launcher_foreground" />
+    </item>
+</layer-list>

@@ -1,26 +1,37 @@
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator, type BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeScreen } from '../features/home/screens/HomeScreen';
-import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
+import { AccountScreen } from '../features/account/screens/AccountScreen';
+import { OrderHistoryScreen } from '../features/orders/screens/OrderHistoryScreen';
+import { MarketsTabScreen } from '../features/merchants/screens/MarketsTabScreen';
 import { colors, radii, shadows, spacing } from '../theme';
 import { TabBarIcon } from './TabBarIcon';
+import { TAB_BAR_SIDE_INSET, useTabBarMetrics } from './tabBarMetrics';
+import type { IconName } from '../components/ui';
 import type { MainTabParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-const MarketsScreen = () => <PlaceholderScreen title="All markets" />;
-const OrdersScreen = () => <PlaceholderScreen title="Order history" />;
-const AccountScreen = () => <PlaceholderScreen title="Your account" />;
 
-const TAB_BAR_HEIGHT = 66;
+/**
+ * Built once at module scope. Defining these inline in the navigator would
+ * hand React a brand-new component type on every render, which remounts the
+ * icon and throws away its state.
+ */
+const tabOptions = (title: string, icon: IconName): BottomTabNavigationOptions => ({
+  title,
+  tabBarIcon: ({ focused }) => <TabBarIcon name={icon} focused={focused} />,
+});
+
+const HOME_OPTIONS = tabOptions('Home', 'home');
+const MARKETS_OPTIONS = tabOptions('Markets', 'store');
+const ORDERS_OPTIONS = tabOptions('Orders', 'bag');
+const ACCOUNT_OPTIONS = tabOptions('Account', 'user');
 
 export function MainTabNavigator() {
-  const insets = useSafeAreaInsets();
-  // The bar floats, so it has to clear the gesture bar / nav buttons itself.
-  const bottom = Math.max(insets.bottom, spacing.md);
+  const { bottom, height } = useTabBarMetrics();
 
   return (
     <Tab.Navigator
@@ -28,43 +39,15 @@ export function MainTabNavigator() {
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: [styles.tabBar, { bottom, height: TAB_BAR_HEIGHT }],
+        tabBarStyle: [styles.tabBar, { bottom, height }],
         tabBarItemStyle: styles.tabItem,
         tabBarLabelStyle: styles.tabLabel,
         tabBarIconStyle: styles.tabIcon,
       }}>
-      <Tab.Screen
-        name="HomeTab"
-        component={HomeScreen}
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ focused }) => <TabBarIcon name="home" focused={focused} />,
-        }}
-      />
-      <Tab.Screen
-        name="MarketsTab"
-        component={MarketsScreen}
-        options={{
-          title: 'Markets',
-          tabBarIcon: ({ focused }) => <TabBarIcon name="store" focused={focused} />,
-        }}
-      />
-      <Tab.Screen
-        name="OrdersTab"
-        component={OrdersScreen}
-        options={{
-          title: 'Orders',
-          tabBarIcon: ({ focused }) => <TabBarIcon name="bag" focused={focused} />,
-        }}
-      />
-      <Tab.Screen
-        name="AccountTab"
-        component={AccountScreen}
-        options={{
-          title: 'Account',
-          tabBarIcon: ({ focused }) => <TabBarIcon name="user" focused={focused} />,
-        }}
-      />
+      <Tab.Screen name="HomeTab" component={HomeScreen} options={HOME_OPTIONS} />
+      <Tab.Screen name="MarketsTab" component={MarketsTabScreen} options={MARKETS_OPTIONS} />
+      <Tab.Screen name="OrdersTab" component={OrderHistoryScreen} options={ORDERS_OPTIONS} />
+      <Tab.Screen name="AccountTab" component={AccountScreen} options={ACCOUNT_OPTIONS} />
     </Tab.Navigator>
   );
 }
@@ -72,8 +55,9 @@ export function MainTabNavigator() {
 const styles = StyleSheet.create({
   tabBar: {
     position: 'absolute',
-    left: spacing.lg,
-    right: spacing.lg,
+    // Margin, not left/right: the navigator positions the bar itself and
+    // overrides those.
+    marginHorizontal: TAB_BAR_SIDE_INSET,
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
     borderRadius: radii.xxl,

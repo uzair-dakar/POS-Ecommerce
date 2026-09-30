@@ -1,7 +1,7 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { env } from '../../config/env';
-import { mockHandlers } from '../mock/handlers';
+import { resolveMockHandler } from '../mock/handlers';
 
 export type ApiError = {
   status: number;
@@ -43,11 +43,13 @@ export const appBaseQuery: BaseQueryFn<ApiRequest, unknown, ApiError> = async (
 ) => {
   if (env.useMocks) {
     await delay(env.mockLatencyMs);
-    const handler = mockHandlers[args.url];
-    if (!handler) {
+    const resolved = resolveMockHandler(args);
+    if (!resolved) {
       return { error: { status: 404, message: `No mock handler for "${args.url}"` } };
     }
-    return { data: handler(args.params) };
+    // Handlers receive the whole request so they can branch on the body of a
+    // POST exactly as the real endpoint will.
+    return resolved.handler(resolved.request);
   }
 
   const result = await httpBaseQuery(

@@ -1,18 +1,48 @@
 import React, { memo } from 'react';
-import { StyleSheet, TextInput, View, ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View, ViewStyle } from 'react-native';
 import { colors, radii, spacing, textVariants } from '../../theme';
+import { AppText } from './Text';
 import { Icon } from './Icon';
 
 export type SearchBarProps = {
   placeholder: string;
   value?: string;
   onChangeText?: (text: string) => void;
-  /** Renders a non-editable bar that navigates to the real search screen. */
+  /**
+   * Makes the bar a button that opens the real search screen instead of an
+   * input. Mutually exclusive with `onChangeText`.
+   */
   onPress?: () => void;
+  autoFocus?: boolean;
   style?: ViewStyle;
 };
 
-function SearchBarBase({ placeholder, value, onChangeText, onPress, style }: SearchBarProps) {
+function SearchBarBase({
+  placeholder,
+  value,
+  onChangeText,
+  onPress,
+  autoFocus,
+  style,
+}: SearchBarProps) {
+  // A display-only bar is a real button, not a disabled TextInput: Android
+  // does not deliver press events to a non-editable input, so tapping one
+  // silently does nothing.
+  if (onPress) {
+    return (
+      <Pressable
+        accessibilityRole="search"
+        accessibilityLabel={placeholder}
+        onPress={onPress}
+        style={({ pressed }) => [styles.wrapper, pressed && styles.pressed, style]}>
+        <Icon name="search" size={18} color={colors.textSubtle} />
+        <AppText variant="body" color="textSubtle" numberOfLines={1} style={styles.flex}>
+          {placeholder}
+        </AppText>
+      </Pressable>
+    );
+  }
+
   return (
     <View style={[styles.wrapper, style]}>
       <Icon name="search" size={18} color={colors.textSubtle} />
@@ -22,10 +52,11 @@ function SearchBarBase({ placeholder, value, onChangeText, onPress, style }: Sea
         placeholderTextColor={colors.textSubtle}
         value={value}
         onChangeText={onChangeText}
-        editable={!onPress}
-        onPressIn={onPress}
+        autoFocus={autoFocus}
+        autoCapitalize="none"
+        autoCorrect={false}
         returnKeyType="search"
-        accessibilityRole="search"
+        accessibilityLabel={placeholder}
       />
     </View>
   );
@@ -41,7 +72,9 @@ const styles = StyleSheet.create({
     borderRadius: radii.md,
     backgroundColor: colors.surfaceMuted,
   },
+  flex: { flex: 1 },
   input: { flex: 1, padding: 0, color: colors.text, ...textVariants.body },
+  pressed: { opacity: 0.8 },
 });
 
 export const SearchBar = memo(SearchBarBase);

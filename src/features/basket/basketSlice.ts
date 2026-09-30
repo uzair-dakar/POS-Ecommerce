@@ -16,6 +16,8 @@ export type BasketState = {
   /** A basket belongs to exactly one merchant; switching clears it. */
   merchantId: MerchantId | null;
   merchantName: string | null;
+  /** Kept so the order can carry it without re-fetching the merchant. */
+  merchantImageUrl: string | null;
   lines: BasketLine[];
   deliveryFee: Money;
 };
@@ -23,6 +25,7 @@ export type BasketState = {
 const initialState: BasketState = {
   merchantId: null,
   merchantName: null,
+  merchantImageUrl: null,
   lines: [],
   deliveryFee: 0,
 };
@@ -33,9 +36,14 @@ const basketSlice = createSlice({
   reducers: {
     lineAdded: (
       state,
-      action: PayloadAction<{ merchantId: MerchantId; merchantName: string; line: BasketLine }>,
+      action: PayloadAction<{
+        merchantId: MerchantId;
+        merchantName: string;
+        merchantImageUrl: string;
+        line: BasketLine;
+      }>,
     ) => {
-      const { merchantId, merchantName, line } = action.payload;
+      const { merchantId, merchantName, merchantImageUrl, line } = action.payload;
 
       // Ordering from a different merchant starts a fresh basket.
       if (state.merchantId && state.merchantId !== merchantId) {
@@ -43,6 +51,7 @@ const basketSlice = createSlice({
       }
       state.merchantId = merchantId;
       state.merchantName = merchantName;
+      state.merchantImageUrl = merchantImageUrl;
 
       const existing = state.lines.find(
         l => l.productId === line.productId && l.optionsSummary === line.optionsSummary,
@@ -70,6 +79,7 @@ const basketSlice = createSlice({
       if (state.lines.length === 0) {
         state.merchantId = null;
         state.merchantName = null;
+        state.merchantImageUrl = null;
       }
     },
 
@@ -91,6 +101,18 @@ export const selectBasketLines = (state: RootSlice) => state.basket.lines;
  * Memoised so the floating basket bar only re-renders when the numbers it
  * shows actually change, not on every unrelated store update.
  */
+/**
+ * Quantity per product id. Menu and grocery lists read this one memoised map
+ * rather than each row scanning the basket, so adding an item re-renders only
+ * the rows whose own number changed.
+ */
+export const selectBasketQuantities = createSelector([selectBasketLines], lines =>
+  lines.reduce<Record<string, number>>((acc, line) => {
+    acc[line.productId] = (acc[line.productId] ?? 0) + line.quantity;
+    return acc;
+  }, {}),
+);
+
 export const selectBasketSummary = createSelector([selectBasket], basket => {
   const itemCount = basket.lines.reduce((sum, line) => sum + line.quantity, 0);
   const subtotal = basket.lines.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);

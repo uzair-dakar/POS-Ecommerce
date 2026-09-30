@@ -11,7 +11,7 @@ import type {
  * Fixture data shaped exactly like the future API response. When the real
  * backend lands, only `services/api/baseQuery.ts` changes — nothing else.
  */
-const img = (id: string, w = 600) =>
+export const img = (id: string, w = 600) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=70`;
 
 const merchant = (m: Omit<Merchant, 'kind'> & { kind: Merchant['kind'] }): Merchant => m;
@@ -172,7 +172,7 @@ export const MOCK_HOME_FEED: HomeFeed = {
     },
   ],
   brands: [
-    { id: 'ch_mcdonalds' as ChainId, name: 'McDonalds', logoUrl: img('1619881589558-3ba0a6d8fb60', 200), locationCount: 12 },
+    { id: 'ch_mcdonalds' as ChainId, name: 'McDonalds', logoUrl: img('1552526881-721ce8509abb', 200), locationCount: 12 },
     { id: 'ch_kfc' as ChainId, name: 'KFC', logoUrl: img('1626082927389-6cd097cdc6ec', 200), locationCount: 9 },
     { id: 'ch_burger_oclock' as ChainId, name: "Burger O'Clock", logoUrl: img('1568901346375-23c9450c58cd', 200), locationCount: 6 },
   ],
