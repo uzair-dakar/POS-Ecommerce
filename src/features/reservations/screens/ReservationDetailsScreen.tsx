@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Screen, ScreenHeader } from '../../../components/layout';
 import { AppText, Button, Checkbox, Chip, Icon, TextField } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing, textVariants } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, textVariants, surfaces } from '../../../theme';
 import { formatCountdown, formatReservationDate, formatTime } from '../../../utils';
 import { useForm } from '../../../hooks/useForm';
 import { phoneNumber, required } from '../../../utils/validation';
@@ -280,10 +280,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.md,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   summaryItem: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 
@@ -294,12 +291,9 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 110,
     padding: spacing.lg,
-    borderRadius: radii.lg,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     color: colors.text,
     ...textVariants.body,
+    ...surfaces.outlined,
   },
 
   consents: { gap: spacing.lg, marginTop: spacing.sm },

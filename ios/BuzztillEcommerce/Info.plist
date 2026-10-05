@@ -34,7 +34,7 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -56,5 +56,22 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>PlusJakartaSans-Medium.ttf</string>
+		<string>PlusJakartaSans-ExtraBoldItalic.ttf</string>
+		<string>PlusJakartaSans-SemiBold.ttf</string>
+		<string>PlusJakartaSans-Regular.ttf</string>
+		<string>PlusJakartaSans-Bold.ttf</string>
+		<string>PlusJakartaSans-ExtraBold.ttf</string>
+		<string>PlusJakartaSans-Italic.ttf</string>
+		<string>PlusJakartaSans-BoldItalic.ttf</string>
+		<string>Nunito-Medium.ttf</string>
+		<string>Nunito-ExtraBold.ttf</string>
+		<string>Nunito-Regular.ttf</string>
+		<string>Nunito-SemiBold.ttf</string>
+		<string>Nunito-Bold.ttf</string>
+		<string>Nunito-Black.ttf</string>
+	</array>
 </dict>
 </plist>

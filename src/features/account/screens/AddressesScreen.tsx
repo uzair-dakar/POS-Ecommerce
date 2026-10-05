@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Screen, ScreenHeader } from '../../../components/layout';
 import { AppText, Button, Icon } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 
 type SavedAddress = {
   id: string;
@@ -94,10 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.lg,
-    borderRadius: radii.lg,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.outlined,
   },
   rowSelected: { borderColor: colors.accent },
   icon: {

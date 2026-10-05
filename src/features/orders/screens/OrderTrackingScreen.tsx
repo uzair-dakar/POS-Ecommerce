@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen } from '../../../components/layout';
 import { AppText, Badge, Icon, IconButton, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatPrice, pluralise } from '../../../utils';
 import type { OrderStatus } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -218,10 +218,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   riderAvatar: {
     width: 48,
@@ -237,10 +234,7 @@ const styles = StyleSheet.create({
 
   summaryCard: {
     padding: spacing.lg,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   summaryRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   summaryCopy: { flex: 1, gap: spacing.xxs },

@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { colors, radii, spacing } from '../../theme';
+import { colors, radii, shadows, spacing } from '../../theme';
 import { AppText } from './Text';
 import { Icon, type IconName } from './Icon';
 
@@ -59,7 +59,7 @@ function ButtonBase({
     switch (variant) {
       case 'secondary':
         return {
-          container: { backgroundColor: colors.primary },
+          container: { backgroundColor: colors.primary, ...shadows.card },
           contentColor: 'textInverse' as const,
         };
       case 'soft':
@@ -86,7 +86,10 @@ function ButtonBase({
           contentColor: onDark ? ('textInverse' as const) : ('textAccent' as const),
         };
       default:
-        return { container: { backgroundColor: colors.accent }, contentColor: 'textInverse' as const };
+        return {
+          container: { backgroundColor: colors.accent, ...shadows.card },
+          contentColor: 'textInverse' as const,
+        };
     }
   }, [variant, tone]);
 
@@ -130,14 +133,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radii.pill,
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.xxl,
   },
   fullWidth: { alignSelf: 'stretch' },
   content: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   contentSpread: { alignSelf: 'stretch', justifyContent: 'space-between' },
   trailing: { marginLeft: 'auto' },
-  pressed: { opacity: 0.85, transform: [{ scale: 0.99 }] },
-  disabled: { opacity: 0.45 },
+  pressed: { opacity: 0.9, transform: [{ scale: 0.975 }] },
+  disabled: { opacity: 0.4, shadowOpacity: 0, elevation: 0 },
 });
 
 export const Button = memo(ButtonBase);

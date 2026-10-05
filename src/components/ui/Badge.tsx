@@ -35,8 +35,8 @@ function BadgeBase({ label, tone = 'accent', style }: BadgeProps) {
 
 const styles = StyleSheet.create({
   badge: {
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 5,
     borderRadius: radii.pill,
     alignSelf: 'flex-start',
   },

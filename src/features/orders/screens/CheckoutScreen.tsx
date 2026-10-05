@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen } from '../../../components/layout';
-import { AppText, Button, Wordmark } from '../../../components/ui';
+import { AppText, Button, Logo } from '../../../components/ui';
 import { spacing } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { basketCleared, selectBasket } from '../../basket/basketSlice';
@@ -57,7 +57,7 @@ export function CheckoutScreen() {
   return (
     <Screen background="primaryDark" statusBarStyle="light-content" edges={['top', 'bottom']}>
       <View style={styles.centered}>
-        <Wordmark size="lg" />
+        <Logo size={84} elevated />
 
         <AppText variant="h2" color="textInverse" align="center">
           {isError ? 'We could not place your order' : 'Placing your order…'}

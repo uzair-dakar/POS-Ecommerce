@@ -9,7 +9,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Screen } from '../../components/layout';
-import { AppText, Wordmark } from '../../components/ui';
+import { AppText, Logo } from '../../components/ui';
 import { spacing } from '../../theme';
 
 /**
@@ -38,7 +38,7 @@ export function SplashScreen() {
   return (
     <Screen background="primaryDark" statusBarStyle="light-content" edges={[]}>
       <View style={styles.centered}>
-        <Wordmark size="lg" />
+        <Logo size={104} elevated />
         <Animated.View style={animatedStyle}>
           <AppText variant="eyebrow" color="textInverse">
             Delivered fresh, every time

@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { QueryBoundary, Screen, ScreenHeader } from '../../../components/layout';
 import { AppText, Badge, Button, Icon, QuantityStepper, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatReservationDate, formatTime } from '../../../utils';
 import type { SeatingKind, SeatingOption } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -251,10 +251,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   guestsIcon: {
     width: 40,
@@ -272,10 +269,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     gap: spacing.xs,
     padding: spacing.lg,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   seatingCardSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
   seatingCardDisabled: { opacity: 0.5 },

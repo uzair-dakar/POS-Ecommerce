@@ -7,7 +7,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 
 import { Screen } from '../../../components/layout';
 import { AppImage, AppText, Button, Icon } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatReservationDate, formatTime } from '../../../utils';
 import type { RootStackParamList } from '../../../navigation/types';
 
@@ -141,10 +141,7 @@ const styles = StyleSheet.create({
     // Overlaps the hero, as in the design.
     marginTop: -spacing.huge,
     padding: spacing.lg,
-    borderRadius: radii.xl,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    ...surfaces.card,
   },
   referenceRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   referenceCopy: { flex: 1, gap: spacing.xxs },

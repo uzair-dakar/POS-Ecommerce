@@ -6,7 +6,7 @@ import { HomeScreen } from '../features/home/screens/HomeScreen';
 import { AccountScreen } from '../features/account/screens/AccountScreen';
 import { OrderHistoryScreen } from '../features/orders/screens/OrderHistoryScreen';
 import { MarketsTabScreen } from '../features/merchants/screens/MarketsTabScreen';
-import { colors, radii, shadows, spacing } from '../theme';
+import { colors, radii, shadows, spacing, textVariants } from '../theme';
 import { TabBarIcon } from './TabBarIcon';
 import { TAB_BAR_SIDE_INSET, useTabBarMetrics } from './tabBarMetrics';
 import type { IconName } from '../components/ui';
@@ -67,5 +67,5 @@ const styles = StyleSheet.create({
   },
   tabItem: { paddingVertical: 0 },
   tabIcon: { flex: 0 },
-  tabLabel: { fontSize: 11, fontWeight: '600', marginTop: spacing.xxs },
+  tabLabel: { ...textVariants.label, marginTop: spacing.xxs },
 });

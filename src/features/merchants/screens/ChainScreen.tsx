@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen } from '../../../components/layout';
 import { AppImage, AppText, Chip, Dot, IconButton, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import type { ChainLocation } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useGetChainQuery } from '../api/merchantsApi';
@@ -198,10 +198,7 @@ const styles = StyleSheet.create({
     flex: 1,
     gap: spacing.xxs,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   filters: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
   listTitle: { marginTop: spacing.sm },

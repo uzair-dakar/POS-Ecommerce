@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppImage, AppText, Badge, Icon, QuantityStepper } from '../../../components/ui';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, spacing, surfaces } from '../../../theme';
 import { formatPrice, formatUnitPrice } from '../../../utils';
 import type { Product } from '../../../types';
 
@@ -98,11 +98,8 @@ function GroceryTileBase({
 const styles = StyleSheet.create({
   tile: {
     flex: 1,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     overflow: 'hidden',
+    ...surfaces.card,
   },
   image: { height: 132 },
   save: { position: 'absolute', top: spacing.sm, left: spacing.sm },

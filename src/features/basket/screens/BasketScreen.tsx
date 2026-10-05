@@ -13,7 +13,7 @@ import {
   QuantityStepper,
   TextField,
 } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatPrice } from '../../../utils';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -293,11 +293,8 @@ const styles = StyleSheet.create({
   progressFill: { width: '50%', height: 3, borderRadius: radii.pill, backgroundColor: colors.accent },
 
   card: {
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     paddingHorizontal: spacing.lg,
+    ...surfaces.card,
   },
   line: {
     flexDirection: 'row',

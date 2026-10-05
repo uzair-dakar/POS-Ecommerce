@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen } from '../../../components/layout';
-import { AppImage, AppText, Button, Chip, Icon, Wordmark } from '../../../components/ui';
+import { AppImage, AppText, Button, Chip, Icon, Logo } from '../../../components/ui';
 import { colors, SCREEN_GUTTER, spacing } from '../../../theme';
 import { useAppDispatch } from '../../../store/hooks';
 import type { AuthStackParamList } from '../../../navigation/types';
@@ -39,7 +39,7 @@ export function OnboardingScreen() {
         <View style={styles.collageScrim} pointerEvents="none" />
 
         <View style={styles.brand} pointerEvents="none">
-          <Wordmark size="lg" />
+          <Logo size={92} elevated />
           <AppText variant="eyebrow" color="textInverse">
             Delivered fresh, every time
           </AppText>

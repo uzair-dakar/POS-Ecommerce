@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppImage, AppText, Badge, Icon } from '../../../components/ui';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, spacing, surfaces } from '../../../theme';
 import { formatPrice } from '../../../utils';
 import type { Product } from '../../../types';
 
@@ -64,10 +64,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.lg,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.outlined,
   },
   // Items already in the basket get the accent ring from the design.
   rowInBasket: { borderColor: colors.accent },

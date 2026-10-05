@@ -8,7 +8,7 @@ import { QueryBoundary, Screen } from '../../../components/layout';
 import { AppImage, AppText, Button, Icon, Skeleton } from '../../../components/ui';
 import { useAppSelector } from '../../../store/hooks';
 import { selectUser } from '../../auth/authSlice';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatDeliveryWindow, formatPrice, pluralise } from '../../../utils';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useGetOrderQuery } from '../api/ordersApi';
@@ -152,10 +152,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginTop: spacing.xl,
     padding: spacing.lg,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   referenceRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   divider: {

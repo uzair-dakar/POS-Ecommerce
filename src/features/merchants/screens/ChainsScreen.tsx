@@ -5,7 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen, ScreenHeader } from '../../../components/layout';
 import { AppImage, AppText, Icon, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { pluralise } from '../../../utils';
 import type { Chain } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -89,10 +89,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.lg,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   logo: { width: 68, height: 68, borderRadius: radii.md },
   copy: { flex: 1, gap: spacing.xxs },

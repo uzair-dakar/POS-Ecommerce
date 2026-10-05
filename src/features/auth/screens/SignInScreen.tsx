@@ -85,7 +85,7 @@ export function SignInScreen() {
         </>
       }>
       <AuthHeader
-        showWordmark
+        showLogo
         title="Sign in"
         subtitle="Welcome back. Your basket and orders are waiting."
       />

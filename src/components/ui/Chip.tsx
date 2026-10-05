@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Pressable, StyleSheet, ViewStyle } from 'react-native';
-import { colors, radii, spacing } from '../../theme';
+import { colors, radii, shadows, spacing } from '../../theme';
 import { AppText } from './Text';
 import type { ColorToken } from '../../theme';
 
@@ -60,14 +60,14 @@ function ChipBase({
 
 const styles = StyleSheet.create({
   chip: {
-    height: 38,
-    paddingHorizontal: spacing.lg,
+    height: 40,
+    paddingHorizontal: spacing.xl,
     borderRadius: radii.pill,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
   },
-  lightSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
+  lightSelected: { backgroundColor: colors.primary, borderColor: colors.primary, ...shadows.card },
   lightUnselected: { backgroundColor: colors.surface, borderColor: colors.border },
   darkSelected: { backgroundColor: colors.surface, borderColor: colors.surface },
   darkUnselected: {
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   disabled: { opacity: 0.45 },
-  pressed: { opacity: 0.85 },
+  pressed: { opacity: 0.85, transform: [{ scale: 0.97 }] },
 });
 
 export const Chip = memo(ChipBase);

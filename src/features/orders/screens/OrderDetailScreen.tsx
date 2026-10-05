@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { QueryBoundary, Screen, ScreenHeader } from '../../../components/layout';
 import { AppText, Badge, Button, Icon, IconButton, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatPrice } from '../../../utils';
 import type { OrderEvent } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -193,11 +193,8 @@ function DetailSkeleton() {
 const styles = StyleSheet.create({
   content: { padding: SCREEN_GUTTER, paddingBottom: spacing.huge, gap: spacing.lg },
   card: {
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     padding: spacing.lg,
+    ...surfaces.card,
   },
   totalHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   totalCopy: { gap: spacing.xxs },

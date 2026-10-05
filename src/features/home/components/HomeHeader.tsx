@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { AppText, Icon, SearchBar, Wordmark } from '../../../components/ui';
+import { AppText, Icon, Logo, SearchBar } from '../../../components/ui';
 import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
 
 export type HomeHeaderProps = {
@@ -32,7 +32,7 @@ function HomeHeaderBase({ deliverTo, onChangeAddress, onSearchPress }: HomeHeade
           </View>
         </Pressable>
 
-        <Wordmark size="sm" />
+        <Logo size={42} elevated />
       </View>
 
       <SearchBar
@@ -45,19 +45,19 @@ function HomeHeaderBase({ deliverTo, onChangeAddress, onSearchPress }: HomeHeade
 }
 
 const styles = StyleSheet.create({
-  wrapper: { paddingHorizontal: SCREEN_GUTTER, paddingTop: spacing.sm, gap: spacing.md },
+  wrapper: { paddingHorizontal: SCREEN_GUTTER, paddingTop: spacing.md, gap: spacing.lg },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   address: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   pin: {
-    width: 34,
-    height: 34,
+    width: 38,
+    height: 38,
     borderRadius: radii.pill,
     backgroundColor: colors.accentSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
   addressRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
-  search: { marginBottom: spacing.sm },
+  search: { marginBottom: spacing.md },
 });
 
 export const HomeHeader = memo(HomeHeaderBase);

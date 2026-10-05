@@ -6,7 +6,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen } from '../../../components/layout';
 import { AppImage, AppText, Badge, Button, Chip, Icon, SearchBar, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatPrice, pluralise } from '../../../utils';
 import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
 import type { Order } from '../../../types';
@@ -298,12 +298,9 @@ const styles = StyleSheet.create({
   liveTrack: { flex: 1 },
 
   card: {
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     padding: spacing.md,
     gap: spacing.md,
+    ...surfaces.card,
   },
   cardTop: { flexDirection: 'row', gap: spacing.md },
   thumb: { width: 54, height: 54, borderRadius: radii.md },

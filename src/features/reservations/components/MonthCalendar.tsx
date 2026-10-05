@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText, IconButton } from '../../../components/ui';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, spacing, surfaces } from '../../../theme';
 
 export type MonthCalendarProps = {
   /** ISO "YYYY-MM-DD". */
@@ -125,11 +125,8 @@ function MonthCalendarBase({ value, onChange, month, onChangeMonth, minDate }: M
 const styles = StyleSheet.create({
   card: {
     padding: spacing.lg,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     gap: spacing.md,
+    ...surfaces.card,
   },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   flip: { transform: [{ rotate: '180deg' }] },

@@ -7,7 +7,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { colors, radii, spacing, textVariants } from '../../theme';
+import { colors, radii, shadows, spacing, textVariants } from '../../theme';
 import { AppText } from './Text';
 import { Icon, type IconName } from './Icon';
 
@@ -15,6 +15,8 @@ export type TextFieldProps = Omit<TextInputProps, 'style'> & {
   label?: string;
   icon?: IconName;
   error?: string;
+  /** Guidance shown under the field while it is valid. */
+  hint?: string;
   /** Renders a show/hide toggle and starts masked. */
   secure?: boolean;
   /** Fixed text before the input, e.g. a dialling code. */
@@ -22,16 +24,30 @@ export type TextFieldProps = Omit<TextInputProps, 'style'> & {
   containerStyle?: ViewStyle;
 };
 
-/**
- * The app's only text input. Owns its focus and visibility state so screens
- * stay declarative, and mirrors the design's three states: resting, focused
- * (accent ring) and error (red ring + message).
- */
 /** Forwarded so a screen can focus the next field from a return key. */
 export type TextFieldRef = ComponentRef<typeof TextInput>;
 
+/**
+ * The app's only text input.
+ *
+ * Owns its focus and visibility state so screens stay declarative, and gives
+ * each state a distinct look rather than only a border colour: focus lifts the
+ * field onto a white surface with an accent ring and tints the leading icon;
+ * error swaps the ring and the message; resting sits flush on the page.
+ */
 export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextFieldBase(
-  { label, icon, error, secure = false, prefix, containerStyle, onFocus, onBlur, ...rest },
+  {
+    label,
+    icon,
+    error,
+    hint,
+    secure = false,
+    prefix,
+    containerStyle,
+    onFocus,
+    onBlur,
+    ...rest
+  },
   ref,
 ) {
   const [isFocused, setIsFocused] = useState(false);
@@ -55,10 +71,17 @@ export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextF
 
   const toggleMask = useCallback(() => setIsMasked(current => !current), []);
 
+  const hasError = !!error;
+  const iconColor = hasError
+    ? colors.danger
+    : isFocused
+      ? colors.accentPressed
+      : colors.textSubtle;
+
   return (
     <View style={containerStyle}>
       {label ? (
-        <AppText variant="captionStrong" color="primaryMuted" style={styles.label}>
+        <AppText variant="label" color={hasError ? 'danger' : 'textMuted'} style={styles.label}>
           {label}
         </AppText>
       ) : null}
@@ -67,13 +90,15 @@ export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextF
         style={[
           styles.field,
           isFocused && styles.fieldFocused,
-          !!error && styles.fieldError,
+          hasError && styles.fieldError,
         ]}>
-        {icon ? <Icon name={icon} size={18} color={colors.textSubtle} /> : null}
+        {icon ? <Icon name={icon} size={19} color={iconColor} /> : null}
 
         {prefix ? (
           <>
-            <AppText variant="bodyStrong">{prefix}</AppText>
+            <AppText variant="bodyStrong" color="textMuted">
+              {prefix}
+            </AppText>
             <View style={styles.prefixDivider} />
           </>
         ) : null}
@@ -86,6 +111,9 @@ export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextF
           onFocus={handleFocus}
           onBlur={handleBlur}
           accessibilityLabel={label}
+          selectionColor={colors.accent}
+          cursorColor={colors.accent}
+          underlineColorAndroid="transparent"
           {...rest}
         />
 
@@ -93,16 +121,24 @@ export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextF
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={isMasked ? 'Show password' : 'Hide password'}
-            hitSlop={spacing.sm}
-            onPress={toggleMask}>
-            <Icon name={isMasked ? 'eye' : 'eyeOff'} size={18} color={colors.textMuted} />
+            hitSlop={10}
+            onPress={toggleMask}
+            style={({ pressed }) => pressed && styles.pressed}>
+            <Icon name={isMasked ? 'eye' : 'eyeOff'} size={19} color={colors.textMuted} />
           </Pressable>
         ) : null}
       </View>
 
       {error ? (
-        <AppText variant="caption" color="danger" style={styles.error}>
-          {error}
+        <View style={styles.message}>
+          <Icon name="close" size={12} color={colors.danger} strokeWidth={2.6} />
+          <AppText variant="caption" color="danger" style={styles.messageText}>
+            {error}
+          </AppText>
+        </View>
+      ) : hint ? (
+        <AppText variant="caption" color="textSubtle" style={styles.hint}>
+          {hint}
         </AppText>
       ) : null}
     </View>
@@ -110,26 +146,40 @@ export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextF
 });
 
 const styles = StyleSheet.create({
-  label: { marginBottom: spacing.xs },
+  label: { marginBottom: spacing.sm, marginLeft: spacing.xxs },
   field: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    minHeight: 54,
+    minHeight: 56,
     paddingHorizontal: spacing.lg,
     borderRadius: radii.lg,
     borderWidth: 1.5,
     borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceMuted,
   },
-  fieldFocused: { borderColor: colors.accent },
-  fieldError: { borderColor: colors.danger },
+  // Focus lifts the field off the page rather than only recolouring its edge.
+  fieldFocused: {
+    borderColor: colors.accent,
+    backgroundColor: colors.surface,
+    ...shadows.card,
+  },
+  fieldError: { borderColor: colors.danger, backgroundColor: colors.dangerSurface },
   prefixDivider: {
     width: 1,
-    height: 22,
+    height: 24,
     marginLeft: -spacing.xs,
-    backgroundColor: colors.border,
+    backgroundColor: colors.borderStrong,
   },
-  input: { flex: 1, padding: 0, color: colors.text, ...textVariants.body },
-  error: { marginTop: spacing.xs },
+  input: { flex: 1, paddingVertical: spacing.md, color: colors.text, ...textVariants.body },
+  message: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
+    marginLeft: spacing.xxs,
+  },
+  messageText: { flex: 1 },
+  hint: { marginTop: spacing.sm, marginLeft: spacing.xxs },
+  pressed: { opacity: 0.6 },
 });

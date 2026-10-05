@@ -15,7 +15,7 @@ function QuickPromoCardBase({ promotion, tone, onPress }: QuickPromoCardProps) {
   return (
     <Card
       radius="lg"
-      elevation="none"
+      elevation="card"
       padded={false}
       onPress={() => onPress(promotion)}
       style={[
@@ -45,7 +45,7 @@ function QuickPromoCardBase({ promotion, tone, onPress }: QuickPromoCardProps) {
 }
 
 const styles = StyleSheet.create({
-  card: { flex: 1, height: 148, justifyContent: 'space-between', padding: spacing.md },
+  card: { flex: 1, height: 156, justifyContent: 'space-between', padding: spacing.lg },
   body: { gap: spacing.xs },
   footer: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between' },
   ctaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, flexShrink: 1 },

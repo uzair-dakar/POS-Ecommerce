@@ -5,7 +5,16 @@ import { HorizontalList } from '../../../components/layout';
 import { colors, radii, spacing } from '../../../theme';
 import type { Category, CategoryId } from '../../../types';
 
-const ITEM_WIDTH = 64;
+export const CATEGORY_TILE_WIDTH = 96;
+
+/**
+ * A soft wash behind each tile's art, cycled by position.
+ *
+ * The reference app gives every category its own pastel plate, which is what
+ * stops a row of photographs reading as a grey grid. Cycling by index means a
+ * new category from the server gets a colour without anyone assigning one.
+ */
+const TILE_TINTS = ['#FDF0DC', '#E7F3E9', '#E4F0F8', '#FBE7E7', '#F0EAF8'] as const;
 
 export type CategoryRailProps = {
   categories: readonly Category[];
@@ -13,23 +22,32 @@ export type CategoryRailProps = {
   onSelect: (id: CategoryId) => void;
 };
 
+/** The big tiles at the top of the feed. */
 function CategoryRailBase({ categories, selectedId, onSelect }: CategoryRailProps) {
   const renderItem = useCallback<ListRenderItem<Category>>(
-    ({ item }) => {
+    ({ item, index }) => {
       const isSelected = item.id === selectedId;
       return (
         <Pressable
           accessibilityRole="tab"
           accessibilityState={{ selected: isSelected }}
+          accessibilityLabel={item.name}
           onPress={() => onSelect(item.id)}
-          style={styles.item}>
-          <View style={[styles.imageWrapper, isSelected && styles.imageWrapperSelected]}>
+          style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
+          <View
+            style={[
+              styles.tile,
+              { backgroundColor: TILE_TINTS[index % TILE_TINTS.length] },
+              isSelected && styles.tileSelected,
+            ]}>
             <AppImage source={{ uri: item.imageUrl }} style={styles.image} />
           </View>
+
           <AppText
-            variant="label"
-            color={isSelected ? 'textAccent' : 'textMuted'}
-            numberOfLines={1}>
+            variant="captionStrong"
+            color={isSelected ? 'textAccent' : 'text'}
+            align="center"
+            numberOfLines={2}>
             {item.name}
           </AppText>
         </Pressable>
@@ -43,24 +61,25 @@ function CategoryRailBase({ categories, selectedId, onSelect }: CategoryRailProp
       data={categories}
       renderItem={renderItem}
       keyExtractor={item => item.id}
-      itemWidth={ITEM_WIDTH}
-      gap={spacing.lg}
+      itemWidth={CATEGORY_TILE_WIDTH}
+      gap={spacing.md}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  item: { width: ITEM_WIDTH, alignItems: 'center', gap: spacing.xs },
-  imageWrapper: {
-    width: 58,
-    height: 58,
-    borderRadius: radii.lg,
+  item: { width: CATEGORY_TILE_WIDTH, gap: spacing.sm },
+  tile: {
+    width: CATEGORY_TILE_WIDTH,
+    height: CATEGORY_TILE_WIDTH,
+    borderRadius: radii.xl,
+    overflow: 'hidden',
     borderWidth: 2,
     borderColor: colors.transparent,
-    padding: 2,
   },
-  imageWrapperSelected: { borderColor: colors.accent },
-  image: { flex: 1, borderRadius: radii.md },
+  tileSelected: { borderColor: colors.accent },
+  image: { flex: 1 },
+  pressed: { opacity: 0.85, transform: [{ scale: 0.97 }] },
 });
 
 export const CategoryRail = memo(CategoryRailBase);

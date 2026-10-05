@@ -26,7 +26,8 @@ const palette = {
   slate300: '#C3CED7',
   slate200: '#E2E8ED',
   slate100: '#F0F3F5',
-  slate50: '#F6F8F9',
+  slate50: '#F5F7F9',
+  canvas: '#F7F5F2',
 
   white: '#FFFFFF',
   black: '#000000',
@@ -46,7 +47,7 @@ export const colors = {
   accentSurface: palette.orange50,
 
   // Surfaces
-  background: palette.slate50,
+  background: palette.canvas,
   surface: palette.white,
   surfaceMuted: palette.slate100,
   surfaceInverse: palette.navy800,

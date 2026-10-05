@@ -14,4 +14,4 @@ export { SectionHeader, type SectionHeaderProps } from './SectionHeader';
 export { SearchBar, type SearchBarProps } from './SearchBar';
 export { TextField, type TextFieldProps } from './TextField';
 export { QuantityStepper, type QuantityStepperProps } from './QuantityStepper';
-export { Wordmark, type WordmarkProps } from './Wordmark';
+export { Logo, type LogoProps } from './Logo';

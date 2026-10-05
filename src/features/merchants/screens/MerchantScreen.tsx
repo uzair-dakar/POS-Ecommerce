@@ -12,7 +12,7 @@ import {
   selectBasketQuantities,
 } from '../../basket/basketSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatDeliveryWindow, formatPrice } from '../../../utils';
 import type { MerchantDetail, Product, SectionId } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -362,11 +362,8 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: SCREEN_GUTTER, paddingBottom: spacing.lg, gap: spacing.md },
   statStrip: {
     flexDirection: 'row',
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
     paddingVertical: spacing.md,
+    ...surfaces.card,
   },
   stat: { flex: 1, alignItems: 'center', gap: spacing.xxs },
 
@@ -377,10 +374,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   toggleOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
   toggleCopy: { flex: 1, gap: spacing.xxs },
@@ -392,10 +386,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   pillCopy: { flex: 1 },
 

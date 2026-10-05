@@ -8,6 +8,10 @@ import {
   type ListRenderItem,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen, HorizontalList } from '../../../components/layout';
@@ -25,6 +29,7 @@ import { HeroPromoCard } from '../components/HeroPromoCard';
 import { QuickPromoCard } from '../components/QuickPromoCard';
 import { BrandCard, BRAND_CARD_WIDTH } from '../components/BrandCard';
 import { MerchantCard, MERCHANT_CARD_WIDTH } from '../components/MerchantCard';
+import { StickyCategoryHeader } from '../components/StickyCategoryHeader';
 
 /**
  * Each row of the feed is one item in a single virtualized list. Building the
@@ -42,10 +47,21 @@ type Section =
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
+const AnimatedFlatList = Animated.createAnimatedComponent(
+  FlatList as new () => FlatList<Section>,
+);
+
 export function HomeScreen() {
   const navigation = useNavigation<Navigation>();
   const { width } = useWindowDimensions();
   const { clearance } = useTabBarMetrics();
+
+  // Kept on the UI thread so the sticky bar tracks the finger even while the
+  // feed is busy rendering rows.
+  const scrollY = useSharedValue(0);
+  const handleScroll = useAnimatedScrollHandler(event => {
+    scrollY.value = event.contentOffset.y;
+  });
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>();
 
   const { data: feed, isLoading, isFetching, isError, refetch } = useGetHomeFeedQuery();
@@ -248,7 +264,7 @@ export function HomeScreen() {
 
   return (
     <Screen>
-      <FlatList
+      <AnimatedFlatList
         data={isLoading ? [] : sections}
         renderItem={renderSection}
         keyExtractor={section => section.key}
@@ -266,6 +282,8 @@ export function HomeScreen() {
           { paddingBottom: clearance + spacing.xxl },
         ]}
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         refreshControl={
           <RefreshControl
             refreshing={isFetching && !isLoading}
@@ -278,6 +296,17 @@ export function HomeScreen() {
         windowSize={7}
         removeClippedSubviews
       />
+
+      {feed ? (
+        <StickyCategoryHeader
+          scrollY={scrollY}
+          categories={feed.categories}
+          deliverTo={feed.deliverTo}
+          selectedId={selectedCategory}
+          onSelect={openCategory}
+          onChangeAddress={openAddressPicker}
+        />
+      ) : null}
 
       <BasketBar onPress={openBasket} bottomOffset={clearance + spacing.md} />
     </Screen>

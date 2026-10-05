@@ -22,7 +22,7 @@ function QuantityStepperBase({
   max = 99,
   compact = false,
 }: QuantityStepperProps) {
-  const size = compact ? 30 : 36;
+  const size = compact ? 32 : 40;
   return (
     <View style={styles.row}>
       <Pressable
@@ -67,9 +67,9 @@ const styles = StyleSheet.create({
   button: { alignItems: 'center', justifyContent: 'center', borderRadius: radii.pill },
   minus: { backgroundColor: colors.surfaceMuted },
   plus: { backgroundColor: colors.primary },
-  value: { minWidth: 20, textAlign: 'center' },
+  value: { minWidth: 22, textAlign: 'center' },
   disabled: { opacity: 0.4 },
-  pressed: { opacity: 0.8 },
+  pressed: { opacity: 0.8, transform: [{ scale: 0.92 }] },
 });
 
 export const QuantityStepper = memo(QuantityStepperBase);

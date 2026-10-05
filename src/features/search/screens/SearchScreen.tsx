@@ -15,7 +15,7 @@ import {
   Skeleton,
 } from '../../../components/ui';
 import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
-import { colors, radii, SCREEN_GUTTER, spacing } from '../../../theme';
+import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import { formatDeliveryFee, formatDeliveryWindow, formatPrice } from '../../../utils';
 import type { Merchant, Product } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -190,10 +190,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    borderRadius: radii.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    ...surfaces.card,
   },
   thumb: { width: 58, height: 58, borderRadius: radii.md },
   copy: { flex: 1, gap: spacing.xxs },
