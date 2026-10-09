@@ -37,7 +37,7 @@ function SectionHeaderBase({ title, eyebrow, actionLabel, onActionPress }: Secti
             <AppText variant="label" color="primaryMuted">
               {actionLabel}
             </AppText>
-            <Icon name="chevronRight" size={11} color={colors.primaryMuted} strokeWidth={2.6} />
+            <Icon name="chevronRight" size={11} color={colors.primaryMuted} />
           </Pressable>
         ) : null}
       </View>

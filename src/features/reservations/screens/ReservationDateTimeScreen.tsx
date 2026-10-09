@@ -2,7 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useFooterInset } from '../../../hooks/useFooterInset';
 
 import { QueryBoundary, Screen, ScreenHeader } from '../../../components/layout';
 import { AppText, Badge, Button, Icon, QuantityStepper, Skeleton } from '../../../components/ui';
@@ -24,7 +25,7 @@ const SEATING_ICON: Record<SeatingKind, 'store' | 'bolt' | 'card' | 'pin'> = {
 
 export function ReservationDateTimeScreen() {
   const navigation = useNavigation<Navigation>();
-  const insets = useSafeAreaInsets();
+  const footerInset = useFooterInset();
   const { params } = useRoute<RouteProp<RootStackParamList, 'ReservationDateTime'>>();
 
   const today = new Date();
@@ -150,7 +151,7 @@ export function ReservationDateTimeScreen() {
               </View>
             </ScrollView>
 
-            <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+            <View style={[styles.footer, { paddingBottom: footerInset }]}>
               <View style={styles.summaryRow}>
                 <AppText variant="caption" color="textMuted">
                   {formatReservationDate(date)}

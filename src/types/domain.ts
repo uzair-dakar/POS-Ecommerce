@@ -120,6 +120,8 @@ export type Offer = {
 export type MerchantDetail = {
   merchant: Merchant;
   offers: readonly Offer[];
+  /** The headline few, shown as a rail above the menu rather than as a tab. */
+  popular: readonly Product[];
   sections: readonly MenuSection[];
   /** Restaurants only — drives the "Book table" control. */
   acceptsReservations: boolean;

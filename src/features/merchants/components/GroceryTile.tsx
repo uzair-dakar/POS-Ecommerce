@@ -65,7 +65,7 @@ function GroceryTileBase({
               hitSlop={6}
               onPress={handleAdd}
               style={styles.add}>
-              <Icon name="plus" size={18} color={colors.textInverse} strokeWidth={2.6} />
+              <Icon name="plus" size={18} color={colors.textInverse} />
             </Pressable>
           )}
         </View>
@@ -96,12 +96,12 @@ function GroceryTileBase({
 }
 
 const styles = StyleSheet.create({
-  tile: {
-    flex: 1,
-    overflow: 'hidden',
-    ...surfaces.card,
+  tile: { flex: 1, ...surfaces.card },
+  image: {
+    height: 132,
+    borderTopLeftRadius: radii.lg,
+    borderTopRightRadius: radii.lg,
   },
-  image: { height: 132 },
   save: { position: 'absolute', top: spacing.sm, left: spacing.sm },
   control: { position: 'absolute', right: spacing.sm, bottom: -spacing.md },
   add: {

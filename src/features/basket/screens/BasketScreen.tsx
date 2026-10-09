@@ -1,8 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useFooterInset } from '../../../hooks/useFooterInset';
 
 import { Screen, ScreenHeader } from '../../../components/layout';
 import {
@@ -19,11 +20,14 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import type { RootStackParamList } from '../../../navigation/types';
 import {
   basketCleared,
+  deliverySlotChosen,
   lineQuantityChanged,
   selectBasket,
   selectBasketSummary,
+  selectDeliverySlot,
   type BasketLine,
 } from '../basketSlice';
+import { DeliveryTimeSheet } from '../components/DeliveryTimeSheet';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -32,11 +36,13 @@ const VAT_RATE = 0.18;
 
 export function BasketScreen() {
   const navigation = useNavigation<Navigation>();
-  const insets = useSafeAreaInsets();
+  const footerInset = useFooterInset();
   const dispatch = useAppDispatch();
 
   const basket = useAppSelector(selectBasket);
   const summary = useAppSelector(selectBasketSummary);
+  const scheduledFor = useAppSelector(selectDeliverySlot);
+  const [whenOpen, setWhenOpen] = useState(false);
 
   const setQuantity = useCallback(
     (line: BasketLine, quantity: number) => {
@@ -118,7 +124,7 @@ export function BasketScreen() {
             accessibilityRole="button"
             onPress={navigation.goBack}
             style={styles.addMore}>
-            <Icon name="plus" size={16} color={colors.accentPressed} strokeWidth={2.6} />
+            <Icon name="plus" size={16} color={colors.accentPressed} />
             <AppText variant="captionStrong" color="textAccent">
               Add more items
             </AppText>
@@ -136,7 +142,12 @@ export function BasketScreen() {
             value="12 Triq Hal Taxien, Valletta"
             onChange={() => navigation.navigate('Addresses')}
           />
-          <DetailRow icon="clock" label="When" value="Standard · 30-40 min" onChange={() => {}} />
+          <DetailRow
+            icon="clock"
+            label="When"
+            value={scheduledFor ? `${scheduledFor.label} · ${scheduledFor.detail}` : 'Standard'}
+            onChange={() => setWhenOpen(true)}
+          />
           <DetailRow icon="card" label="Payment" value="Visa •••• 4421" onChange={() => {}} last />
         </View>
 
@@ -158,7 +169,7 @@ export function BasketScreen() {
         </View>
       </ScrollView>
 
-      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+      <View style={[styles.footer, { paddingBottom: footerInset }]}>
         <View style={styles.secure}>
           <Icon name="shield" size={14} color={colors.success} />
           <AppText variant="caption" color="textMuted">
@@ -172,6 +183,14 @@ export function BasketScreen() {
           onPress={() => navigation.navigate('Checkout')}
         />
       </View>
+
+      <DeliveryTimeSheet
+        visible={whenOpen}
+        standardLabel="30-40 min"
+        value={scheduledFor}
+        onChange={slot => dispatch(deliverySlotChosen(slot))}
+        onClose={() => setWhenOpen(false)}
+      />
     </Screen>
   );
 }

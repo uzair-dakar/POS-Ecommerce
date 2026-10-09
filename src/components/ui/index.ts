@@ -15,3 +15,8 @@ export { SearchBar, type SearchBarProps } from './SearchBar';
 export { TextField, type TextFieldProps } from './TextField';
 export { QuantityStepper, type QuantityStepperProps } from './QuantityStepper';
 export { Logo, type LogoProps } from './Logo';
+export { GradientScrim, type GradientScrimProps } from './GradientScrim';
+export { GlassSurface, GLASS_NAVY, type GlassSurfaceProps } from './GlassSurface';
+export { CountBadge, badgeAnchor, type CountBadgeProps } from './CountBadge';
+export { SegmentedControl, type SegmentedControlProps } from './SegmentedControl';
+export { SheetModal, type SheetModalProps } from './SheetModal';

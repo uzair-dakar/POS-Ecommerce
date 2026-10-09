@@ -3,6 +3,8 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useFooterInset } from '../../../hooks/useFooterInset';
+
 import { QueryBoundary, Screen } from '../../../components/layout';
 import {
   AppImage,
@@ -32,6 +34,7 @@ import { useProductSelection } from '../hooks/useProductSelection';
 export function ProductScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const footerInset = useFooterInset();
   const { params } = useRoute<RouteProp<RootStackParamList, 'Product'>>();
   const dispatch = useAppDispatch();
 
@@ -140,7 +143,7 @@ export function ProductScreen() {
                 )}
               </ScrollView>
 
-              <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+              <View style={[styles.footer, { paddingBottom: footerInset }]}>
                 <QuantityStepper
                   quantity={selection.quantity}
                   min={1}

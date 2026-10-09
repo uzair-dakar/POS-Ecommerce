@@ -34,7 +34,7 @@ function MenuItemRowBase({ product, quantityInBasket = 0, onPress }: MenuItemRow
               {quantityInBasket}×
             </AppText>
           ) : null}
-          <AppText variant="h3" numberOfLines={1} style={styles.name}>
+          <AppText variant="bodyStrong" numberOfLines={1} style={styles.name}>
             {product.name}
           </AppText>
         </View>
@@ -52,7 +52,7 @@ function MenuItemRowBase({ product, quantityInBasket = 0, onPress }: MenuItemRow
       <View>
         <AppImage source={{ uri: product.imageUrl }} style={styles.image} />
         <View style={styles.add}>
-          <Icon name="plus" size={16} color={colors.textInverse} strokeWidth={2.6} />
+          <Icon name="plus" size={16} color={colors.textInverse} />
         </View>
       </View>
     </Pressable>
@@ -62,7 +62,7 @@ function MenuItemRowBase({ product, quantityInBasket = 0, onPress }: MenuItemRow
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    gap: spacing.lg,
+    gap: spacing.md,
     padding: spacing.md,
     ...surfaces.outlined,
   },
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   name: { flexShrink: 1 },
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginTop: spacing.xxs },
-  image: { width: 92, height: 92, borderRadius: radii.md },
+  image: { width: 84, height: 84, borderRadius: radii.md },
   add: {
     position: 'absolute',
     right: -spacing.xs,

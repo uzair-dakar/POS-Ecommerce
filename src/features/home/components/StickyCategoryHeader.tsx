@@ -9,7 +9,7 @@ import Animated, {
 
 import { AppImage, AppText, Icon } from '../../../components/ui';
 import { HorizontalList } from '../../../components/layout';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, shadows, spacing } from '../../../theme';
 import type { Category, CategoryId } from '../../../types';
 
 export type StickyCategoryHeaderProps = {
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
+    ...shadows.card,
   },
   location: {
     flexDirection: 'row',
@@ -137,6 +138,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
+    ...shadows.subtle,
   },
   tabSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
   tabImage: { width: 26, height: 26, borderRadius: radii.sm },

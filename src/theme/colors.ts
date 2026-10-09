@@ -27,7 +27,10 @@ const palette = {
   slate200: '#E2E8ED',
   slate100: '#F0F3F5',
   slate50: '#F5F7F9',
-  canvas: '#F7F5F2',
+  // White. Cards are white too, so nothing is separated by colour any more —
+  // the shadow and the hairline do that work on their own, which is what
+  // keeps the page bright instead of grey.
+  canvas: '#FFFFFF',
 
   white: '#FFFFFF',
   black: '#000000',

@@ -12,6 +12,15 @@ export type BasketLine = {
   optionsSummary?: string;
 };
 
+/**
+ * When the order should arrive.
+ *
+ * `null` means as soon as possible, which is the default and what most orders
+ * are — storing it as absence rather than as a magic string keeps "did they
+ * choose a time" a single, obvious check everywhere it matters.
+ */
+export type DeliverySlot = { label: string; detail: string } | null;
+
 export type BasketState = {
   /** A basket belongs to exactly one merchant; switching clears it. */
   merchantId: MerchantId | null;
@@ -20,6 +29,7 @@ export type BasketState = {
   merchantImageUrl: string | null;
   lines: BasketLine[];
   deliveryFee: Money;
+  scheduledFor: DeliverySlot;
 };
 
 const initialState: BasketState = {
@@ -28,6 +38,7 @@ const initialState: BasketState = {
   merchantImageUrl: null,
   lines: [],
   deliveryFee: 0,
+  scheduledFor: null,
 };
 
 const basketSlice = createSlice({
@@ -83,11 +94,16 @@ const basketSlice = createSlice({
       }
     },
 
+    deliverySlotChosen: (state, action: PayloadAction<DeliverySlot>) => {
+      state.scheduledFor = action.payload;
+    },
+
     basketCleared: () => initialState,
   },
 });
 
-export const { lineAdded, lineQuantityChanged, basketCleared } = basketSlice.actions;
+export const { lineAdded, lineQuantityChanged, deliverySlotChosen, basketCleared } =
+  basketSlice.actions;
 export const basketReducer = basketSlice.reducer;
 
 /* ------------------------------ selectors ------------------------------ */
@@ -96,6 +112,9 @@ type RootSlice = { basket: BasketState };
 
 export const selectBasket = (state: RootSlice) => state.basket;
 export const selectBasketLines = (state: RootSlice) => state.basket.lines;
+/** Coalesced, because a basket persisted before this field existed has none. */
+export const selectDeliverySlot = (state: RootSlice): DeliverySlot =>
+  state.basket.scheduledFor ?? null;
 
 /**
  * Memoised so the floating basket bar only re-renders when the numbers it

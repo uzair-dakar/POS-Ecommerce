@@ -12,6 +12,7 @@ import type { RootStackParamList } from './types';
 import { ChainScreen } from '../features/merchants/screens/ChainScreen';
 import { ChainsScreen } from '../features/merchants/screens/ChainsScreen';
 import { MerchantScreen } from '../features/merchants/screens/MerchantScreen';
+import { PopularItemsScreen } from '../features/merchants/screens/PopularItemsScreen';
 import { MerchantListScreen } from '../features/merchants/screens/MerchantListScreen';
 import { ProductScreen } from '../features/merchants/screens/ProductScreen';
 import { SearchScreen } from '../features/search/screens/SearchScreen';
@@ -80,6 +81,7 @@ function SignedInStack() {
       <Stack.Screen name="Chain" component={ChainScreen} />
       <Stack.Screen name="MerchantList" component={MerchantListScreen} />
       <Stack.Screen name="Merchant" component={MerchantScreen} />
+      <Stack.Screen name="PopularItems" component={PopularItemsScreen} />
       <Stack.Screen
         name="Product"
         component={ProductScreen}

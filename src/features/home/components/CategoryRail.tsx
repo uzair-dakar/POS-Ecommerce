@@ -2,7 +2,7 @@ import React, { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View, type ListRenderItem } from 'react-native';
 import { AppImage, AppText } from '../../../components/ui';
 import { HorizontalList } from '../../../components/layout';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, shadows, spacing } from '../../../theme';
 import type { Category, CategoryId } from '../../../types';
 
 export const CATEGORY_TILE_WIDTH = 96;
@@ -34,13 +34,15 @@ function CategoryRailBase({ categories, selectedId, onSelect }: CategoryRailProp
           accessibilityLabel={item.name}
           onPress={() => onSelect(item.id)}
           style={({ pressed }) => [styles.item, pressed && styles.pressed]}>
-          <View
-            style={[
-              styles.tile,
-              { backgroundColor: TILE_TINTS[index % TILE_TINTS.length] },
-              isSelected && styles.tileSelected,
-            ]}>
-            <AppImage source={{ uri: item.imageUrl }} style={styles.image} />
+          <View style={styles.tileHost}>
+            <View
+              style={[
+                styles.tile,
+                { backgroundColor: TILE_TINTS[index % TILE_TINTS.length] },
+                isSelected && styles.tileSelected,
+              ]}>
+              <AppImage source={{ uri: item.imageUrl }} style={styles.image} />
+            </View>
           </View>
 
           <AppText
@@ -69,6 +71,15 @@ function CategoryRailBase({ categories, selectedId, onSelect }: CategoryRailProp
 
 const styles = StyleSheet.create({
   item: { width: CATEGORY_TILE_WIDTH, gap: spacing.sm },
+  // The tile clips its photo, and a clipping view cannot cast a shadow on
+  // iOS — so the lift lives on a host view wrapped around it.
+  tileHost: {
+    width: CATEGORY_TILE_WIDTH,
+    height: CATEGORY_TILE_WIDTH,
+    borderRadius: radii.xl,
+    backgroundColor: colors.surface,
+    ...shadows.card,
+  },
   tile: {
     width: CATEGORY_TILE_WIDTH,
     height: CATEGORY_TILE_WIDTH,

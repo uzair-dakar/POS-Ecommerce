@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useFooterInset } from '../../../hooks/useFooterInset';
 
 import { Screen, ScreenHeader } from '../../../components/layout';
 import { AppText, Button, Checkbox, Chip, Icon, TextField } from '../../../components/ui';
@@ -49,7 +50,7 @@ const schema = {
 
 export function ReservationDetailsScreen() {
   const navigation = useNavigation<Navigation>();
-  const insets = useSafeAreaInsets();
+  const footerInset = useFooterInset();
   const { params } = useRoute<RouteProp<RootStackParamList, 'ReservationDetails'>>();
   const user = useAppSelector(selectUser);
 
@@ -238,7 +239,7 @@ export function ReservationDetailsScreen() {
           ) : null}
         </ScrollView>
 
-        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+        <View style={[styles.footer, { paddingBottom: footerInset }]}>
           <Button
             label={hasExpired ? 'Choose another time' : 'Complete reservation'}
             loading={isLoading}

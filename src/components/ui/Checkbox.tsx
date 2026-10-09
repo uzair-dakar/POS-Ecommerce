@@ -22,7 +22,7 @@ function CheckboxBase({ checked, onChange, children, accessibilityLabel }: Check
       onPress={toggle}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
       <View style={[styles.box, checked && styles.boxChecked]}>
-        {checked ? <Icon name="check" size={14} color={colors.textInverse} strokeWidth={3} /> : null}
+        {checked ? <Icon name="check" size={14} color={colors.textInverse} /> : null}
       </View>
       <View style={styles.label}>{children}</View>
     </Pressable>

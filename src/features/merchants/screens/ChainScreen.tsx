@@ -4,7 +4,14 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen } from '../../../components/layout';
-import { AppImage, AppText, Chip, Dot, IconButton, Skeleton } from '../../../components/ui';
+import {
+  AppImage,
+  AppText,
+  Dot,
+  IconButton,
+  SegmentedControl,
+  Skeleton,
+} from '../../../components/ui';
 import { colors, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
 import type { ChainLocation } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -110,20 +117,20 @@ export function ChainScreen() {
 
                     <View style={styles.stats}>
                       <Stat value={String(detail.chain.locationCount)} label="Locations" />
+                      <Divider />
                       <Stat value={String(openCount)} label="Open now" />
-                      <Stat value={String(fastest)} label="Fastest min" />
+                      <Divider />
+                      <Stat value={String(fastest)} unit="min" label="Fastest" />
                     </View>
 
-                    <View style={styles.filters}>
-                      {FILTERS.map(option => (
-                        <Chip
-                          key={option}
-                          label={option}
-                          selected={filter === option}
-                          onPress={() => setFilter(option)}
-                        />
-                      ))}
-                    </View>
+                    {/* Bled out so the track runs to the screen edge instead of
+                        wrapping onto a second line. */}
+                      <SegmentedControl
+                        options={FILTERS}
+                        value={filter}
+                        onChange={setFilter}
+                      accessibilityLabel="Filter locations"
+                    />
 
                     <AppText variant="h2" style={styles.listTitle}>
                       Nearby locations
@@ -146,16 +153,32 @@ export function ChainScreen() {
 
 const Separator = () => <View style={styles.separator} />;
 
-function Stat({ value, label }: { value: string; label: string }) {
+/**
+ * One figure in the summary strip.
+ *
+ * The unit rides beside the number on the same baseline — "15 min" is one
+ * quantity, and splitting it into a figure with a word underneath makes it
+ * read as two.
+ */
+function Stat({ value, unit, label }: { value: string; unit?: string; label: string }) {
   return (
     <View style={styles.stat}>
-      <AppText variant="h1">{value}</AppText>
-      <AppText variant="caption" color="textMuted">
+      <View style={styles.statValue}>
+        <AppText variant="h2">{value}</AppText>
+        {unit ? (
+          <AppText variant="caption" color="textMuted" style={styles.statUnit}>
+            {unit}
+          </AppText>
+        ) : null}
+      </View>
+      <AppText variant="caption" color="textMuted" numberOfLines={1}>
         {label}
       </AppText>
     </View>
   );
 }
+
+const Divider = () => <View style={styles.statDivider} />;
 
 function ChainSkeleton() {
   return (
@@ -193,14 +216,21 @@ const styles = StyleSheet.create({
   localRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 
   body: { paddingHorizontal: SCREEN_GUTTER, paddingTop: spacing.xl, gap: spacing.lg },
-  stats: { flexDirection: 'row', gap: spacing.md },
-  stat: {
-    flex: 1,
-    gap: spacing.xxs,
-    padding: spacing.md,
+  stats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.md,
     ...surfaces.card,
   },
-  filters: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' },
+  stat: { flex: 1, alignItems: 'center', gap: spacing.xxs },
+  statValue: { flexDirection: 'row', alignItems: 'baseline', gap: 3 },
+  statUnit: { marginBottom: 1 },
+  statDivider: {
+    width: StyleSheet.hairlineWidth,
+    alignSelf: 'stretch',
+    marginVertical: spacing.xs,
+    backgroundColor: colors.divider,
+  },
   listTitle: { marginTop: spacing.sm },
 
   rowGutter: { paddingHorizontal: SCREEN_GUTTER },

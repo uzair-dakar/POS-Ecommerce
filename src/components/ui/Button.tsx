@@ -113,7 +113,7 @@ function ButtonBase({
       ) : (
         <View style={[styles.content, trailingLabel ? styles.contentSpread : null]}>
           {iconLeft ? <Icon name={iconLeft} size={18} color={colors[contentColor]} /> : null}
-          <AppText variant="button" color={contentColor}>
+          <AppText variant="button" color={contentColor} numberOfLines={1}>
             {label}
           </AppText>
           {trailingLabel ? (

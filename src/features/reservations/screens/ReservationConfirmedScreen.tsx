@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useFooterInset } from '../../../hooks/useFooterInset';
 import Clipboard from '@react-native-clipboard/clipboard';
 
 import { Screen } from '../../../components/layout';
@@ -19,6 +21,7 @@ const HERO_IMAGE =
 export function ReservationConfirmedScreen() {
   const navigation = useNavigation<Navigation>();
   const insets = useSafeAreaInsets();
+  const footerInset = useFooterInset();
   const { params } = useRoute<RouteProp<RootStackParamList, 'ReservationConfirmed'>>();
   const [copied, setCopied] = useState(false);
 
@@ -37,7 +40,7 @@ export function ReservationConfirmedScreen() {
 
         <View style={[styles.heroCopy, { paddingTop: insets.top + spacing.huge }]}>
           <View style={styles.check}>
-            <Icon name="check" size={34} color={colors.primary} strokeWidth={3} />
+            <Icon name="check" size={34} color={colors.primary} />
           </View>
           <AppText variant="eyebrow" color="accentBright">
             Reservation confirmed
@@ -81,7 +84,7 @@ export function ReservationConfirmedScreen() {
           </View>
         </View>
 
-        <View style={[styles.actions, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+        <View style={[styles.actions, { paddingBottom: footerInset }]}>
           <Button label="Add to calendar" iconLeft="calendar" onPress={() => {}} />
           <Button
             label="Back to restaurant"

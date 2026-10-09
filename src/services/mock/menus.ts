@@ -37,6 +37,9 @@ type MenuTemplate = {
   products: ProductTemplate[];
 };
 
+/** The one section name that is lifted out of the tabs. */
+const POPULAR_SECTION = 'Most ordered';
+
 /**
  * Menus are generated from a handful of templates rather than written out per
  * merchant. Every store in the app then has a real, browsable menu — which is
@@ -45,10 +48,15 @@ type MenuTemplate = {
  */
 const BURGER_MENU: MenuTemplate = {
   sections: [
-    { name: 'Most ordered', keys: ['signature_burger', 'chicago_bacon', 'crispy_wrap'] },
-    { name: 'Burgers', keys: ['signature_burger', 'chicago_bacon', 'veggie_stack'] },
-    { name: 'Sides', keys: ['fries', 'onion_rings'] },
-    { name: 'Drinks', keys: ['cola', 'lemonade'] },
+    { name: 'Most ordered', keys: ['signature_burger', 'chicago_bacon', 'crispy_wrap', 'smash_double'] },
+    {
+      name: 'Burgers',
+      keys: ['signature_burger', 'chicago_bacon', 'veggie_stack', 'smash_double', 'buttermilk_chicken', 'blue_cheese_burger'],
+    },
+    { name: 'Chicken', keys: ['crispy_wrap', 'buttermilk_chicken', 'wings_six', 'chicken_tenders'] },
+    { name: 'Sides', keys: ['fries', 'onion_rings', 'loaded_fries', 'slaw', 'mac_bites'] },
+    { name: 'Desserts', keys: ['brownie', 'shake_vanilla'] },
+    { name: 'Drinks', keys: ['cola', 'lemonade', 'iced_tea_peach', 'water_still'] },
   ],
   products: [
     {
@@ -65,7 +73,7 @@ const BURGER_MENU: MenuTemplate = {
       key: 'chicago_bacon',
       name: 'Chicago Bacon',
       description: 'Brioche bun, 2 beef patties, extra crispy bacon, smoked barbecue sauce.',
-      photo: '1553979459-d2229ba7433a',
+      photo: '1550317138-10000687a72b',
       price: 1450,
       isPopular: true,
       configurable: true,
@@ -112,15 +120,104 @@ const BURGER_MENU: MenuTemplate = {
       photo: '1621263764928-df1444c5e859',
       price: 320,
     },
+    {
+      key: 'smash_double',
+      name: 'Double Smash',
+      description: 'Two thin-pressed patties, American cheese, burger sauce, pickles.',
+      photo: '1572802419224-296b0aeee0d9',
+      price: 1250,
+      isPopular: true,
+      configurable: true,
+    },
+    {
+      key: 'buttermilk_chicken',
+      name: 'Buttermilk Chicken Burger',
+      description: 'Buttermilk-brined thigh, slaw and chipotle mayo in a toasted bun.',
+      photo: '1606755962773-d324e0a13086',
+      price: 1190,
+      configurable: true,
+    },
+    {
+      key: 'blue_cheese_burger',
+      name: 'Blue Cheese & Onion',
+      description: 'Beef patty, melted blue cheese, slow-cooked onions, peppery rocket.',
+      photo: '1550547660-d9450f859349',
+      price: 1320,
+    },
+    {
+      key: 'wings_six',
+      name: 'Buffalo Wings, 6 pieces',
+      description: 'Tossed in hot sauce, with a blue cheese dip.',
+      photo: '1608039755401-742074f0548d',
+      price: 790,
+    },
+    {
+      key: 'chicken_tenders',
+      name: 'Chicken Tenders',
+      description: 'Five breaded strips with honey mustard.',
+      photo: '1562967914-608f82629710',
+      price: 850,
+    },
+    {
+      key: 'loaded_fries',
+      name: 'Loaded Fries',
+      description: 'Fries under melted cheese, bacon and spring onion.',
+      photo: '1585109649139-366815a0d713',
+      price: 650,
+      isPopular: true,
+    },
+    {
+      key: 'slaw',
+      name: 'House Slaw',
+      description: 'Crisp cabbage and carrot in a light buttermilk dressing.',
+      photo: '1625944230945-1b7dd3b949ab',
+      price: 320,
+    },
+    {
+      key: 'mac_bites',
+      name: 'Mac & Cheese Bites',
+      description: 'Six crumbed bites with a smoked ketchup dip.',
+      photo: '1543339494-b4cd4f7ba686',
+      price: 590,
+    },
+    {
+      key: 'brownie',
+      name: 'Fudge Brownie',
+      description: 'Warm, dense and properly chocolatey.',
+      photo: '1606313564200-e75d5e30476c',
+      price: 480,
+    },
+    {
+      key: 'shake_vanilla',
+      name: 'Vanilla Shake',
+      description: 'Thick, made with real vanilla ice cream.',
+      photo: '1572490122747-3968b75cc699',
+      price: 540,
+    },
+    {
+      key: 'iced_tea_peach',
+      name: 'Peach Iced Tea',
+      description: 'Brewed, chilled and lightly sweetened.',
+      photo: '1499638673689-79a0b5115d87',
+      price: 330,
+    },
+    {
+      key: 'water_still',
+      name: 'Still Water, 500ml',
+      description: 'Maltese spring water.',
+      photo: '1560023907-5f339617ea30',
+      price: 180,
+    },
   ],
 };
 
 const ASIAN_MENU: MenuTemplate = {
   sections: [
-    { name: 'Most ordered', keys: ['pho_bo', 'banh_mi', 'spring_rolls'] },
-    { name: 'Noodles', keys: ['pho_bo', 'pad_thai'] },
-    { name: 'Small plates', keys: ['spring_rolls', 'gyoza'] },
-    { name: 'Drinks', keys: ['iced_tea'] },
+    { name: 'Most ordered', keys: ['pho_bo', 'banh_mi', 'spring_rolls', 'pad_thai'] },
+    { name: 'Noodles', keys: ['pho_bo', 'pad_thai', 'bun_cha', 'drunken_noodles', 'ramen_shoyu'] },
+    { name: 'Rice', keys: ['nasi_goreng', 'chicken_katsu_curry', 'crispy_tofu_rice'] },
+    { name: 'Small plates', keys: ['spring_rolls', 'gyoza', 'edamame', 'prawn_crackers', 'satay_skewers'] },
+    { name: 'Drinks', keys: ['iced_tea', 'coconut_water', 'jasmine_tea'] },
   ],
   products: [
     {
@@ -136,7 +233,7 @@ const ASIAN_MENU: MenuTemplate = {
       key: 'pad_thai',
       name: 'Pad Thai',
       description: 'Wok-fried rice noodles, egg, peanuts and tamarind.',
-      photo: '1559314809-0d155014e29e',
+      photo: '1551183053-bf91a1d81141',
       price: 1350,
       isPopular: true,
     },
@@ -152,7 +249,7 @@ const ASIAN_MENU: MenuTemplate = {
       key: 'spring_rolls',
       name: 'Spring Rolls',
       description: 'Four rolls with a sweet chilli dip.',
-      photo: '1626700051175-6818013e1d4f',
+      photo: '1476224203421-9ac39bcb3327',
       price: 600,
     },
     {
@@ -169,21 +266,106 @@ const ASIAN_MENU: MenuTemplate = {
       photo: '1621263764928-df1444c5e859',
       price: 380,
     },
+    {
+      key: 'bun_cha',
+      name: 'Bun Cha',
+      description: 'Grilled pork, rice noodles, herbs and a dipping broth.',
+      photo: '1582878826629-29b7ad1cdc43',
+      price: 1290,
+      configurable: true,
+    },
+    {
+      key: 'drunken_noodles',
+      name: 'Drunken Noodles',
+      description: 'Wide rice noodles, chilli, basil and a hot wok.',
+      photo: '1626804475297-41608ea09aeb',
+      price: 1190,
+    },
+    {
+      key: 'ramen_shoyu',
+      name: 'Shoyu Ramen',
+      description: 'Soy-based broth, chashu pork, soft egg and spring onion.',
+      photo: '1591814468924-caf88d1232e1',
+      price: 1390,
+      isPopular: true,
+    },
+    {
+      key: 'nasi_goreng',
+      name: 'Nasi Goreng',
+      description: 'Fried rice with prawns, chicken and a fried egg on top.',
+      photo: '1603133872878-684f208fb84b',
+      price: 1150,
+    },
+    {
+      key: 'chicken_katsu_curry',
+      name: 'Chicken Katsu Curry',
+      description: 'Panko chicken, mild curry sauce and steamed rice.',
+      photo: '1569718212165-3a8278d5f624',
+      price: 1250,
+      isPopular: true,
+    },
+    {
+      key: 'crispy_tofu_rice',
+      name: 'Crispy Tofu Rice Bowl',
+      description: 'Glazed tofu, pickled vegetables and sesame rice.',
+      photo: '1540189549336-e6e99c3679fe',
+      price: 1050,
+    },
+    {
+      key: 'edamame',
+      name: 'Edamame',
+      description: 'Steamed and salted.',
+      photo: '1564834724105-918b73d1b9e0',
+      price: 420,
+    },
+    {
+      key: 'prawn_crackers',
+      name: 'Prawn Crackers',
+      description: 'With a sweet chilli dip.',
+      photo: '1626200419199-391ae4be7a41',
+      price: 350,
+    },
+    {
+      key: 'satay_skewers',
+      name: 'Chicken Satay Skewers',
+      description: 'Four skewers with peanut sauce.',
+      photo: '1529563021893-cc83c992d75d',
+      price: 790,
+    },
+    {
+      key: 'coconut_water',
+      name: 'Fresh Orange Juice',
+      description: 'Squeezed to order, served over ice.',
+      photo: '1600271886742-f049cd451bba',
+      price: 390,
+    },
+    {
+      key: 'jasmine_tea',
+      name: 'Jasmine Tea',
+      description: 'Served hot in a small pot.',
+      photo: '1556881286-fc6915169721',
+      price: 300,
+    },
   ],
 };
 
 const PIZZA_MENU: MenuTemplate = {
   sections: [
-    { name: 'Most ordered', keys: ['margherita', 'diavola', 'garlic_bread'] },
-    { name: 'Pizza', keys: ['margherita', 'diavola', 'quattro_formaggi'] },
-    { name: 'Sides', keys: ['garlic_bread', 'rocket_salad'] },
+    { name: 'Most ordered', keys: ['margherita', 'diavola', 'garlic_bread', 'prosciutto_funghi'] },
+    {
+      name: 'Pizza',
+      keys: ['margherita', 'diavola', 'quattro_formaggi', 'prosciutto_funghi', 'vegetariana', 'calzone_classico'],
+    },
+    { name: 'Pasta', keys: ['carbonara', 'penne_arrabbiata'] },
+    { name: 'Sides', keys: ['garlic_bread', 'rocket_salad', 'olives_marinated'] },
+    { name: 'Desserts', keys: ['tiramisu', 'panna_cotta'] },
   ],
   products: [
     {
       key: 'margherita',
       name: 'Margherita',
       description: 'San Marzano tomato, fior di latte and basil.',
-      photo: '1513104890138-7c749659a591',
+      photo: '1574071318508-1cdbab80d002',
       price: 900,
       isPopular: true,
       configurable: true,
@@ -201,7 +383,7 @@ const PIZZA_MENU: MenuTemplate = {
       key: 'quattro_formaggi',
       name: 'Quattro Formaggi',
       description: 'Mozzarella, gorgonzola, parmesan and pecorino.',
-      photo: '1513104890138-7c749659a591',
+      photo: '1565299624946-b28f40a0ae38',
       price: 1250,
     },
     {
@@ -219,6 +401,65 @@ const PIZZA_MENU: MenuTemplate = {
       photo: '1546069901-ba9599a7e63c',
       price: 620,
     },
+    {
+      key: 'prosciutto_funghi',
+      name: 'Prosciutto e Funghi',
+      description: 'Tomato, mozzarella, cooked ham and mushrooms.',
+      photo: '1571407970349-bc81e7e96d47',
+      price: 1290,
+      isPopular: true,
+      configurable: true,
+    },
+    {
+      key: 'vegetariana',
+      name: 'Vegetariana',
+      description: 'Courgette, peppers, red onion and olives.',
+      photo: '1511689660979-10d2b1aada49',
+      price: 1190,
+    },
+    {
+      key: 'calzone_classico',
+      name: 'Calzone Classico',
+      description: 'Folded and baked, with ham, ricotta and mozzarella.',
+      photo: '1536964549204-cce9eab227bd',
+      price: 1350,
+    },
+    {
+      key: 'carbonara',
+      name: 'Spaghetti Carbonara',
+      description: 'Guanciale, egg yolk, pecorino and black pepper.',
+      photo: '1612874742237-6526221588e3',
+      price: 1250,
+      isPopular: true,
+    },
+    {
+      key: 'penne_arrabbiata',
+      name: 'Penne Arrabbiata',
+      description: 'Tomato, garlic and a proper amount of chilli.',
+      photo: '1563379926898-05f4575a45d8',
+      price: 1090,
+    },
+    {
+      key: 'olives_marinated',
+      name: 'Marinated Olives',
+      description: 'With orange peel and rosemary.',
+      photo: '1611171711912-e3f6b536f532',
+      price: 420,
+    },
+    {
+      key: 'tiramisu',
+      name: 'Tiramisu',
+      description: 'Made in-house, properly soaked.',
+      photo: '1571877227200-a0d98ea607e9',
+      price: 590,
+    },
+    {
+      key: 'panna_cotta',
+      name: 'Panna Cotta',
+      description: 'Vanilla set cream with a berry compote.',
+      photo: '1488477181946-6428a0291777',
+      price: 550,
+    },
   ],
 };
 
@@ -234,7 +475,7 @@ const CAFE_MENU: MenuTemplate = {
       key: 'breakfast_sandwich',
       name: 'Breakfast Sandwich',
       description: 'Free-range egg, smoked bacon and tomato relish in a soft roll.',
-      photo: '1565958011703-44f9829ba187',
+      photo: '1559054663-e8d23213f55c',
       price: 949,
       isPopular: true,
       configurable: true,
@@ -243,7 +484,7 @@ const CAFE_MENU: MenuTemplate = {
       key: 'porridge',
       name: 'Malted Oat Porridge',
       description: 'Rolled oats, toasted seeds and honey.',
-      photo: '1565958011703-44f9829ba187',
+      photo: '1484723091739-30a097e8f929',
       price: 650,
     },
     {
@@ -273,7 +514,7 @@ const CAFE_MENU: MenuTemplate = {
       key: 'filter_coffee',
       name: 'Filter Coffee',
       description: 'Rotating single origin.',
-      photo: '1621263764928-df1444c5e859',
+      photo: '1521302080334-4bebac2763a6',
       price: 280,
     },
   ],
@@ -343,7 +584,7 @@ const MARKET_MENU: MenuTemplate = {
       key: 'tomatoes',
       name: 'Vine Tomatoes, 500g',
       description: 'Grown in Malta.',
-      photo: '1584680226833-0d680d0a0794',
+      photo: '1466637574441-749b8f19452f',
       price: 179,
       unitPrice: 358,
       unitLabel: 'kg',
@@ -581,17 +822,24 @@ function buildDetail(merchant: Merchant): MerchantDetail {
     };
   };
 
-  const sections: readonly MenuSection[] = template.sections.map((section, index) => ({
+  const built: readonly MenuSection[] = template.sections.map((section, index) => ({
     id: `${merchant.id}__s${index}` as SectionId,
     name: section.name,
     products: section.keys.map(productFor),
   }));
+
+  // "Most ordered" is a shortcut, not a part of the menu — it gets its own rail
+  // above the tabs, so the tabs list only real categories and nothing appears
+  // in two of them.
+  const popular = built.find(section => section.name === POPULAR_SECTION);
+  const sections = built.filter(section => section.name !== POPULAR_SECTION);
 
   const isRestaurant = merchant.kind === 'restaurant';
 
   return {
     merchant,
     offers: OFFERS_BY_KIND[merchant.kind],
+    popular: popular?.products ?? [],
     sections,
     acceptsReservations: isRestaurant,
     supportsPickup: isRestaurant,

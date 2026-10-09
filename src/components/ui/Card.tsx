@@ -10,7 +10,13 @@ export type CardProps = ViewProps & {
   style?: ViewStyle | ViewStyle[];
 };
 
-/** Surface primitive. Becomes pressable only when `onPress` is given. */
+/**
+ * Surface primitive. Becomes pressable only when `onPress` is given.
+ *
+ * It does not clip its children: on iOS a clipping layer clips its own shadow
+ * with it, which would leave every card flat on the page. A child that has to
+ * follow the card's corners — a photo across the top, say — rounds itself.
+ */
 function CardBase({
   radius = 'lg',
   elevation = 'card',
@@ -47,7 +53,7 @@ function CardBase({
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, overflow: 'hidden' },
+  card: { backgroundColor: colors.surface },
   padded: { padding: spacing.lg },
   pressed: { opacity: 0.9 },
 });

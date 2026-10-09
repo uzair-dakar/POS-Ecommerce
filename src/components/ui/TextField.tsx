@@ -7,7 +7,7 @@ import {
   type TextInputProps,
   type ViewStyle,
 } from 'react-native';
-import { colors, radii, shadows, spacing, textVariants } from '../../theme';
+import { colors, radii, spacing, textVariants } from '../../theme';
 import { AppText } from './Text';
 import { Icon, type IconName } from './Icon';
 
@@ -31,9 +31,14 @@ export type TextFieldRef = ComponentRef<typeof TextInput>;
  * The app's only text input.
  *
  * Owns its focus and visibility state so screens stay declarative, and gives
- * each state a distinct look rather than only a border colour: focus lifts the
+ * each state a distinct look rather than only a border colour: focus brings the
  * field onto a white surface with an accent ring and tints the leading icon;
  * error swaps the ring and the message; resting sits flush on the page.
+ *
+ * Focus deliberately does not add a shadow. On Android that means elevation,
+ * and changing a view's elevation while it holds the keyboard makes the
+ * platform rebuild its layer — which drops focus mid-tap and bounces it to the
+ * next field, so the field could never be typed into.
  */
 export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextFieldBase(
   {
@@ -131,7 +136,7 @@ export const TextField = forwardRef<TextFieldRef, TextFieldProps>(function TextF
 
       {error ? (
         <View style={styles.message}>
-          <Icon name="close" size={12} color={colors.danger} strokeWidth={2.6} />
+          <Icon name="close" size={12} color={colors.danger} />
           <AppText variant="caption" color="danger" style={styles.messageText}>
             {error}
           </AppText>
@@ -162,7 +167,6 @@ const styles = StyleSheet.create({
   fieldFocused: {
     borderColor: colors.accent,
     backgroundColor: colors.surface,
-    ...shadows.card,
   },
   fieldError: { borderColor: colors.danger, backgroundColor: colors.dangerSurface },
   prefixDivider: {

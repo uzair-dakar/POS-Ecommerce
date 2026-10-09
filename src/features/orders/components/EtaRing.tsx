@@ -1,66 +1,92 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
-import { AppText, Icon } from '../../../components/ui';
-import { colors, radii, spacing } from '../../../theme';
+import Svg, { Circle, Rect, G } from 'react-native-svg';
+
+import { AppText } from '../../../components/ui';
+import { colors, spacing } from '../../../theme';
 
 export type EtaRingProps = {
-  minutes: number;
+  /** "15–20" or "12" — already formatted, since the range is the server's. */
+  value: string;
+  caption: string;
   /** 0-1 around the ring. */
   progress: number;
-  label: string;
   size?: number;
 };
 
-const STROKE = 14;
+/** Ticks around the full circle, and the gap left open at the bottom. */
+const TICKS = 56;
+const SWEEP = 300;
+const START = 180 + (360 - SWEEP) / 2;
+
+const TICK_WIDTH = 4;
+const TICK_LENGTH = 17;
 
 /**
- * The countdown ring on the tracking screen. Drawn with SVG's stroke-dash
- * rather than an animated view, so the arc stays exact at any progress and
- * costs one node instead of a stack of masks.
+ * The countdown ring.
+ *
+ * Drawn as discrete ticks rather than one smooth arc: a solid arc moving a
+ * degree at a time is invisible, while a tick either is lit or is not, so each
+ * step of progress is something you can actually see happen. Each tick is a
+ * rounded rect rotated about the centre, which keeps the ends square to the
+ * radius the way a dial's marks are.
  */
-function EtaRingBase({ minutes, progress, label, size = 210 }: EtaRingProps) {
-  const radius = (size - STROKE) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const dash = circumference * Math.min(Math.max(progress, 0), 1);
+function EtaRingBase({ value, caption, progress, size = 232 }: EtaRingProps) {
+  const lit = Math.round(Math.min(Math.max(progress, 0), 1) * TICKS);
+
+  const ticks = useMemo(() => {
+    const centre = size / 2;
+    const radius = centre - TICK_LENGTH / 2 - 2;
+
+    return Array.from({ length: TICKS }, (_, index) => {
+      const angle = START + (index / (TICKS - 1)) * SWEEP;
+      return {
+        key: index,
+        isLit: index < lit,
+        // Place the tick at the top of the circle, then rotate it into position.
+        transform: `rotate(${angle} ${centre} ${centre})`,
+        x: centre - TICK_WIDTH / 2,
+        y: centre - radius - TICK_LENGTH / 2,
+      };
+    });
+  }, [lit, size]);
 
   return (
-    <View style={[styles.wrapper, { width: size, height: size }]}>
+    <View
+      accessible
+      accessibilityLabel={`${value} ${caption}`}
+      style={[styles.wrapper, { width: size, height: size }]}>
       <Svg width={size} height={size}>
+        {/* The ring carries its own disc so it stays legible where it
+            overlaps the map. */}
         <Circle
           cx={size / 2}
           cy={size / 2}
-          r={radius}
-          stroke={colors.surfaceMuted}
-          strokeWidth={STROKE}
-          fill="none"
+          r={size / 2 - TICK_LENGTH - 4}
+          fill={colors.surface}
         />
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          stroke={colors.accent}
-          strokeWidth={STROKE}
-          strokeLinecap="round"
-          fill="none"
-          strokeDasharray={`${dash} ${circumference}`}
-          // Start the arc at 12 o'clock instead of 3.
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        />
+        <G>
+          {ticks.map(tick => (
+            <Rect
+              key={tick.key}
+              x={tick.x}
+              y={tick.y}
+              width={TICK_WIDTH}
+              height={TICK_LENGTH}
+              rx={TICK_WIDTH / 2}
+              fill={tick.isLit ? colors.accent : colors.border}
+              transform={tick.transform}
+            />
+          ))}
+        </G>
       </Svg>
 
-      <View style={styles.center}>
-        <View style={styles.badge}>
-          <Icon name="bike" size={20} color={colors.accentPressed} />
-        </View>
-        <View style={styles.readout}>
-          <AppText variant="display">{minutes}</AppText>
-          <AppText variant="body" color="textMuted">
-            min
-          </AppText>
-        </View>
-        <AppText variant="body" color="textMuted">
-          {label}
+      <View style={styles.readout} pointerEvents="none">
+        <AppText variant="display" style={styles.value}>
+          {value}
+        </AppText>
+        <AppText variant="caption" color="textMuted" align="center">
+          {caption}
         </AppText>
       </View>
     </View>
@@ -69,16 +95,15 @@ function EtaRingBase({ minutes, progress, label, size = 210 }: EtaRingProps) {
 
 const styles = StyleSheet.create({
   wrapper: { alignItems: 'center', justifyContent: 'center' },
-  center: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center', gap: spacing.xs },
-  badge: {
-    width: 46,
-    height: 46,
-    borderRadius: radii.pill,
-    backgroundColor: colors.accentSoft,
+  readout: {
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: spacing.xxl,
   },
-  readout: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs },
+  // Larger than any other number in the app: on this screen it is the answer
+  // to the only question being asked.
+  value: { fontSize: 46, lineHeight: 54, letterSpacing: -1.5 },
 });
 
 export const EtaRing = memo(EtaRingBase);

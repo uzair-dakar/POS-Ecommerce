@@ -72,7 +72,7 @@ export function AddressesScreen() {
         </View>
 
         <Pressable accessibilityRole="button" style={styles.addRow} onPress={() => {}}>
-          <Icon name="plus" size={16} color={colors.accentPressed} strokeWidth={2.6} />
+          <Icon name="plus" size={16} color={colors.accentPressed} />
           <AppText variant="captionStrong" color="textAccent">
             Add a new address
           </AppText>

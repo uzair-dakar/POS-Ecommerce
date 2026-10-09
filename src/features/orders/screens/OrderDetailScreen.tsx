@@ -140,7 +140,7 @@ function Timeline({ timeline }: { timeline: readonly OrderEvent[] }) {
             <View style={styles.stepRail}>
               <View style={[styles.stepDot, isDone && styles.stepDotDone]}>
                 {isDone ? (
-                  <Icon name="check" size={12} color={colors.textInverse} strokeWidth={3} />
+                  <Icon name="check" size={12} color={colors.textInverse} />
                 ) : null}
               </View>
               {!isLast ? <View style={[styles.stepLine, isDone && styles.stepLineDone]} /> : null}

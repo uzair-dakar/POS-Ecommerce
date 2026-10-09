@@ -48,12 +48,12 @@ function MerchantCardBase({
         layout === 'compact' ? { width: MERCHANT_CARD_WIDTH } : styles.wide,
         pressed && styles.pressed,
       ]}>
-      <View>
+      <View style={styles.media}>
         <AppImage source={{ uri: merchant.imageUrl }} style={styles.image} />
 
         {merchant.offerLabel ? (
           <View style={styles.offer}>
-            <Icon name="percent" size={12} color={colors.accentPressed} strokeWidth={2.4} />
+            <Icon name="percent" size={12} color={colors.accentPressed} />
             <AppText variant="label" color="accentPressed" numberOfLines={1}>
               {merchant.offerLabel}
             </AppText>
@@ -114,7 +114,12 @@ function MerchantCardBase({
 }
 
 const styles = StyleSheet.create({
-  card: { ...surfaces.card, overflow: 'hidden', paddingBottom: spacing.md },
+  card: { ...surfaces.card, paddingBottom: spacing.md },
+  media: {
+    overflow: 'hidden',
+    borderTopLeftRadius: radii.lg,
+    borderTopRightRadius: radii.lg,
+  },
   wide: { alignSelf: 'stretch' },
   image: { height: 132 },
 

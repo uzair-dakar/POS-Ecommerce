@@ -4,8 +4,15 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen } from '../../../components/layout';
-import { AppText, Chip, IconButton, SearchBar, Skeleton } from '../../../components/ui';
+import {
+  AppText,
+  IconButton,
+  SearchBar,
+  SegmentedControl,
+  Skeleton,
+} from '../../../components/ui';
 import { SCREEN_GUTTER, spacing } from '../../../theme';
+import { pluralise } from '../../../utils';
 import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
 import type { Merchant, MerchantKind } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -17,16 +24,21 @@ type Navigation = NativeStackNavigationProp<RootStackParamList>;
 const FILTERS = ['All', 'Open now', 'Free delivery', 'Top rated'] as const;
 type Filter = (typeof FILTERS)[number];
 
-const COPY: Record<MerchantKind, { eyebrow: string; title: string; subtitle: string }> = {
+const COPY: Record<
+  MerchantKind,
+  { eyebrow: string; title: string; subtitle: string; noun: string }
+> = {
   market: {
     eyebrow: 'Discover nearby',
     title: 'All markets',
-    subtitle: 'Grocery stores and local markets, delivered to your door.',
+    subtitle: 'Groceries from shops near you.',
+    noun: 'market',
   },
   restaurant: {
     eyebrow: 'Discover nearby',
     title: 'All restaurants',
-    subtitle: 'Local kitchens and favourites, delivered to your door.',
+    subtitle: 'Local kitchens and favourites.',
+    noun: 'restaurant',
   },
 };
 
@@ -106,7 +118,9 @@ export function MerchantListScreen({ kind: kindProp }: MerchantListScreenProps =
                   <AppText variant="eyebrow" color="textAccent">
                     {copy.eyebrow}
                   </AppText>
-                  <AppText variant="display">{copy.title}</AppText>
+                  <AppText variant="h1" style={styles.title}>
+                    {copy.title}
+                  </AppText>
                   <AppText variant="body" color="textMuted">
                     {copy.subtitle}
                   </AppText>
@@ -117,19 +131,20 @@ export function MerchantListScreen({ kind: kindProp }: MerchantListScreenProps =
                     style={styles.search}
                   />
 
+                  {/* Bled out to the screen edges so the track can run past
+                      the gutter rather than wrapping onto a second line and
+                      pushing the merchants down. */}
                   <View style={styles.filters}>
-                    {FILTERS.map(option => (
-                      <Chip
-                        key={option}
-                        label={option}
-                        selected={filter === option}
-                        onPress={() => setFilter(option)}
-                      />
-                    ))}
+                    <SegmentedControl
+                      options={FILTERS}
+                      value={filter}
+                      onChange={setFilter}
+                      accessibilityLabel="Filter merchants"
+                    />
                   </View>
 
-                  <AppText variant="caption" color="textMuted">
-                    {visible.length} available nearby
+                  <AppText variant="captionStrong" color="textMuted" style={styles.count}>
+                    {pluralise(visible.length, copy.noun)} nearby
                   </AppText>
                 </View>
               }
@@ -160,12 +175,13 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: SCREEN_GUTTER,
     paddingTop: spacing.sm,
-    paddingBottom: spacing.lg,
-    gap: spacing.xs,
+    paddingBottom: spacing.md,
   },
+  title: { marginTop: spacing.xxs, marginBottom: spacing.xs },
   back: { marginBottom: spacing.sm },
   search: { marginTop: spacing.lg },
-  filters: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap', marginVertical: spacing.md },
+  filters: { marginTop: spacing.md },
+  count: { marginTop: spacing.lg },
   rowGutter: { paddingHorizontal: SCREEN_GUTTER },
   separator: { height: spacing.lg },
   skeletonBody: { padding: SCREEN_GUTTER, gap: spacing.lg },

@@ -38,6 +38,7 @@ export type RootStackParamList = {
   Chain: { chainId: ChainId };
   MerchantList: { kind: MerchantKind };
   Merchant: { merchantId: MerchantId };
+  PopularItems: { merchantId: MerchantId };
   Product: { merchantId: MerchantId; productId: ProductId };
 
   // Ordering

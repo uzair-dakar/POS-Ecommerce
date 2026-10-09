@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Svg, { Path } from 'react-native-svg';
+
 import { AppImage, AppText, Dot, IconButton, Rating } from '../../../components/ui';
 import { colors, radii, SCREEN_GUTTER, shadows, spacing } from '../../../theme';
 import { formatPrice } from '../../../utils';
@@ -11,7 +13,35 @@ export type MerchantHeroProps = {
   onSearch?: () => void;
 };
 
-/** Photo, logo badge and the merchant's headline facts. */
+const HERO_HEIGHT = 230;
+const SWEEP_HEIGHT = 28;
+const LOGO_SIZE = 76;
+
+/**
+ * The curve the page rises on.
+ *
+ * Drawn in a 100-wide viewBox and stretched, so one path works at any screen
+ * width. A straight edge with rounded corners cuts the photo off; a sweep that
+ * lifts towards the middle hands it over, and gives the logo a crest to sit on
+ * instead of a line to straddle.
+ *
+ * Kept shallow on purpose: enough of a rise to read as a curve, not so much
+ * that it becomes the thing you notice about the page.
+ */
+function Sweep() {
+  return (
+    <Svg
+      style={styles.sweep}
+      width="100%"
+      height={SWEEP_HEIGHT}
+      viewBox="0 0 100 28"
+      preserveAspectRatio="none">
+      <Path d="M0,28 L0,20 C30,1 70,1 100,20 L100,28 Z" fill={colors.background} />
+    </Svg>
+  );
+}
+
+/** Photo, logo and the merchant's headline facts. */
 function MerchantHeroBase({ detail, onSearch }: MerchantHeroProps) {
   const navigation = useNavigation();
   const { merchant } = detail;
@@ -20,6 +50,7 @@ function MerchantHeroBase({ detail, onSearch }: MerchantHeroProps) {
     <View>
       <View style={styles.hero}>
         <AppImage source={{ uri: merchant.imageUrl }} style={styles.heroImage} />
+
         <View style={styles.heroBar}>
           <IconButton
             name="arrowLeft"
@@ -37,15 +68,24 @@ function MerchantHeroBase({ detail, onSearch }: MerchantHeroProps) {
             <IconButton name="heart" accessibilityLabel="Add to favourites" onPress={() => {}} />
           </View>
         </View>
+
+        <Sweep />
       </View>
 
       <View style={styles.sheet}>
         {merchant.logoUrl ? (
-          <AppImage source={{ uri: merchant.logoUrl }} style={styles.logo} />
+          <View style={styles.logoTile}>
+            <AppImage source={{ uri: merchant.logoUrl }} style={styles.logo} />
+          </View>
         ) : null}
 
-        <AppText variant="h1">{merchant.name}</AppText>
+        <AppText variant="h1" align="center">
+          {merchant.name}
+        </AppText>
 
+        {/* One centred line of facts rather than a left-aligned row: under a
+            centred name and logo, anything flush left reads as a different
+            block that happens to sit nearby. */}
         <View style={styles.factRow}>
           <View style={styles.fact}>
             <Dot color={merchant.isOpen ? colors.success : colors.danger} />
@@ -61,7 +101,7 @@ function MerchantHeroBase({ detail, onSearch }: MerchantHeroProps) {
             ·
           </AppText>
           <AppText variant="caption" color="textMuted">
-            Min. order {formatPrice(merchant.minOrder)}
+            Min. {formatPrice(merchant.minOrder)}
           </AppText>
         </View>
       </View>
@@ -70,7 +110,7 @@ function MerchantHeroBase({ detail, onSearch }: MerchantHeroProps) {
 }
 
 const styles = StyleSheet.create({
-  hero: { height: 220, backgroundColor: colors.primaryDark },
+  hero: { height: HERO_HEIGHT, backgroundColor: colors.primaryDark },
   heroImage: { ...StyleSheet.absoluteFill },
   heroBar: {
     flexDirection: 'row',
@@ -78,28 +118,36 @@ const styles = StyleSheet.create({
     padding: SCREEN_GUTTER,
   },
   heroActions: { flexDirection: 'row', gap: spacing.sm },
+  sweep: { position: 'absolute', left: 0, right: 0, bottom: 0 },
 
-  // Lifts over the photo, matching the rounded sheet in the design.
   sheet: {
-    marginTop: -spacing.xxl,
+    alignItems: 'center',
     paddingHorizontal: SCREEN_GUTTER,
-    paddingTop: spacing.lg,
     paddingBottom: spacing.md,
-    borderTopLeftRadius: radii.xxl,
-    borderTopRightRadius: radii.xxl,
     backgroundColor: colors.background,
     gap: spacing.sm,
   },
-  logo: {
-    width: 66,
-    height: 66,
+  // Rides the crest of the sweep: a white tile around the mark, so a logo with
+  // its own background still reads as one object sitting on the page.
+  logoTile: {
+    width: LOGO_SIZE,
+    height: LOGO_SIZE,
+    marginTop: -(LOGO_SIZE / 2 + spacing.sm),
+    marginBottom: spacing.xs,
+    padding: spacing.xs,
     borderRadius: radii.lg,
-    marginTop: -(spacing.huge + spacing.md),
-    borderWidth: 3,
-    borderColor: colors.surface,
-    ...shadows.card,
+    backgroundColor: colors.surface,
+    ...shadows.raised,
   },
-  factRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
+  logo: { flex: 1, borderRadius: radii.md },
+
+  factRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    flexWrap: 'wrap',
+  },
   fact: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
 });
 

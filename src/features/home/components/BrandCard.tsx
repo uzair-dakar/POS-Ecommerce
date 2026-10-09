@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AppImage, AppText, Icon } from '../../../components/ui';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, shadows, spacing } from '../../../theme';
 import type { Chain } from '../../../types';
 
 export const BRAND_CARD_WIDTH = 108;
@@ -21,13 +21,15 @@ function BrandCardBase({ chain, onPress }: BrandCardProps) {
       accessibilityLabel={`${chain.name}, ${chain.locationCount} locations`}
       onPress={handlePress}
       style={({ pressed }) => [styles.wrapper, pressed && styles.pressed]}>
-      <AppImage source={{ uri: chain.logoUrl }} style={styles.logo} />
+      <View style={styles.logoHost}>
+        <AppImage source={{ uri: chain.logoUrl }} style={styles.logo} />
+      </View>
       <View style={styles.labelRow}>
         <AppText variant="captionStrong" numberOfLines={1} style={styles.name}>
           {chain.name}
         </AppText>
         <View style={styles.chevron}>
-          <Icon name="chevronRight" size={12} color={colors.accentPressed} strokeWidth={2.4} />
+          <Icon name="chevronRight" size={12} color={colors.accentPressed} />
         </View>
       </View>
     </Pressable>
@@ -36,7 +38,14 @@ function BrandCardBase({ chain, onPress }: BrandCardProps) {
 
 const styles = StyleSheet.create({
   wrapper: { width: BRAND_CARD_WIDTH, gap: spacing.sm },
-  logo: { width: BRAND_CARD_WIDTH, height: 96, borderRadius: radii.md },
+  logoHost: {
+    width: BRAND_CARD_WIDTH,
+    height: 96,
+    borderRadius: radii.md,
+    backgroundColor: colors.surface,
+    ...shadows.card,
+  },
+  logo: { width: '100%', height: '100%', borderRadius: radii.md },
   labelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   name: { flexShrink: 1 },
   chevron: {

@@ -115,6 +115,35 @@ replace across screens.
   globally, so `navigation.navigate` is checked at compile time.
 - `npx tsc --noEmit` must pass before any commit.
 
+## Building for iOS
+
+Native modules are code-generated into `ios/build/generated`, which is
+gitignored. Xcode lists those files as build inputs but does **not** create
+them, so a fresh clone — or anyone who clears `ios/build` — gets:
+
+```
+Build input file cannot be found:
+  .../ios/build/generated/ios/ReactCodegen/AsyncStorageSpec/AsyncStorageSpec-generated.mm
+```
+
+That is a missing-artifact error, not a broken project. Regenerate and
+reinstall pods:
+
+```sh
+npm run pods          # regenerates codegen, then pod install
+npm run codegen:ios   # codegen only, when pods are already current
+```
+
+Two things in `ios/` exist to keep current Xcode happy, and should not be
+reverted:
+
+- **Podfile `post_install`** raises `IPHONEOS_DEPLOYMENT_TARGET` on every pod
+  target. A few pods still declare targets below what Xcode will build, and
+  React Native's own post-install misses the resource-bundle targets.
+- **`AppDependencyProvider` in `AppDelegate.swift`** drops React Native's own
+  `SampleTurboModule` from the main-queue setup list. No app links it, so
+  start-up otherwise logs an error and shows a red screen in development.
+
 ## Next screens
 
 Routes for the full design are already declared in `navigation/types.ts` and

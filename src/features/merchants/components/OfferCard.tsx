@@ -1,10 +1,10 @@
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText, Icon } from '../../../components/ui';
-import { colors, radii, spacing } from '../../../theme';
+import { colors, radii, shadows, spacing } from '../../../theme';
 import type { Offer } from '../../../types';
 
-export const OFFER_CARD_WIDTH = 236;
+export const OFFER_CARD_WIDTH = 196;
 
 /** "40% discount on selected items" card in the Deals & benefits row. */
 function OfferCardBase({ offer }: { offer: Offer }) {
@@ -38,13 +38,14 @@ const styles = StyleSheet.create({
     width: OFFER_CARD_WIDTH,
     flexDirection: 'row',
     gap: spacing.md,
-    padding: spacing.md,
+    padding: spacing.sm + 2,
     borderRadius: radii.lg,
     backgroundColor: colors.accentSurface,
+    ...shadows.subtle,
   },
   icon: {
-    width: 34,
-    height: 34,
+    width: 28,
+    height: 28,
     borderRadius: radii.md,
     backgroundColor: colors.surface,
     alignItems: 'center',

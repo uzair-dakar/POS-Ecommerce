@@ -76,7 +76,7 @@ function OptionGroupBlockBase({ group, selectedIds, onToggle }: OptionGroupBlock
                   isSingle ? (
                     <View style={styles.radioDot} />
                   ) : (
-                    <Icon name="check" size={13} color={colors.textInverse} strokeWidth={3} />
+                    <Icon name="check" size={13} color={colors.textInverse} />
                   )
                 ) : null}
               </View>

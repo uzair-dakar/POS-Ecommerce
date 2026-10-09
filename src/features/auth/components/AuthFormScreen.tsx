@@ -6,7 +6,8 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { useFooterInset } from '../../../hooks/useFooterInset';
 import { Screen } from '../../../components/layout';
 import { colors, SCREEN_GUTTER, spacing } from '../../../theme';
 
@@ -23,7 +24,7 @@ export type AuthFormScreenProps = PropsWithChildren<{
  * always reach both the field they are typing in and the button.
  */
 function AuthFormScreenBase({ children, footer }: AuthFormScreenProps) {
-  const insets = useSafeAreaInsets();
+  const footerInset = useFooterInset();
 
   return (
     <Screen edges={['top']}>
@@ -40,7 +41,7 @@ function AuthFormScreenBase({ children, footer }: AuthFormScreenProps) {
         </ScrollView>
 
         <View
-          style={[styles.footer, { paddingBottom: Math.max(insets.bottom, spacing.lg) }]}>
+          style={[styles.footer, { paddingBottom: footerInset }]}>
           {footer}
         </View>
       </KeyboardAvoidingView>

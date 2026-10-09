@@ -5,8 +5,17 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { QueryBoundary, Screen } from '../../../components/layout';
-import { AppImage, AppText, Badge, Button, Chip, Icon, SearchBar, Skeleton } from '../../../components/ui';
-import { colors, radii, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
+import {
+  AppImage,
+  AppText,
+  Badge,
+  Button,
+  Icon,
+  SearchBar,
+  SegmentedControl,
+  Skeleton,
+} from '../../../components/ui';
+import { colors, radii, SCREEN_GUTTER, shadows, spacing, surfaces } from '../../../theme';
 import { formatPrice, pluralise } from '../../../utils';
 import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
 import type { Order } from '../../../types';
@@ -75,7 +84,12 @@ export function OrderHistoryScreen() {
                   <AppText variant="eyebrow" color="textAccent">
                     Your account
                   </AppText>
-                  <AppText variant="display">Order history</AppText>
+                  <AppText variant="h1" style={styles.title}>
+                    Order history
+                  </AppText>
+                  <AppText variant="body" color="textMuted">
+                    Everything you've ordered, live and past.
+                  </AppText>
 
                   <SearchBar
                     placeholder="Search orders or restaurants"
@@ -83,15 +97,15 @@ export function OrderHistoryScreen() {
                     style={styles.search}
                   />
 
+                  {/* Bled out to the screen edges so five statuses stay on one
+                      line instead of wrapping and pushing the orders down. */}
                   <View style={styles.filters}>
-                    {FILTERS.map(option => (
-                      <Chip
-                        key={option}
-                        label={option}
-                        selected={filter === option}
-                        onPress={() => setFilter(option)}
-                      />
-                    ))}
+                    <SegmentedControl
+                      options={FILTERS}
+                      value={filter}
+                      onChange={setFilter}
+                      accessibilityLabel="Filter orders by status"
+                    />
                   </View>
 
                   {visibleLive.length > 0 ? (
@@ -147,28 +161,28 @@ function LiveOrderCard({
       <View style={styles.liveTop}>
         <AppImage source={{ uri: order.merchantImageUrl }} style={styles.liveThumb} />
         <View style={styles.liveCopy}>
-          <AppText variant="h3" color="textInverse" numberOfLines={1}>
+          <AppText variant="h3" numberOfLines={1}>
             {order.merchantName}
           </AppText>
-          <AppText variant="caption" color="textInverse" style={styles.dim}>
+          <AppText variant="caption" color="textMuted">
             {order.reference} · {pluralise(order.lines.length, 'item')}
           </AppText>
         </View>
         {order.etaMinutes !== undefined ? (
           <View style={styles.eta}>
-            <AppText variant="priceLarge" color="accentBright">
+            <AppText variant="priceLarge" color="accentPressed">
               {order.etaMinutes}
             </AppText>
-            <AppText variant="label" color="textInverse" style={styles.dim}>
+            <AppText variant="label" color="textMuted">
               min ETA
             </AppText>
           </View>
         ) : null}
       </View>
 
-      <ProgressTrack progress={orderProgress(order.status)} tone="light" />
+      <ProgressTrack progress={orderProgress(order.status)} tone="warm" />
 
-      <AppText variant="caption" color="textInverse" style={styles.dim}>
+      <AppText variant="caption" color="textMuted">
         {ORDER_STATUS_LABEL[order.status]}
         {order.rider ? ` · ${order.rider.name}` : ''}
       </AppText>
@@ -176,7 +190,7 @@ function LiveOrderCard({
       <View style={styles.liveActions}>
         <Button
           label="Track order"
-          variant="soft"
+          variant="primary"
           size="md"
           iconLeft="bike"
           style={styles.liveTrack}
@@ -186,7 +200,6 @@ function LiveOrderCard({
           label="View details"
           size="md"
           variant="outline"
-          tone="dark"
           onPress={() => onDetails(order)}
         />
       </View>
@@ -251,11 +264,15 @@ function ProgressTrack({
   tone = 'dark',
 }: {
   progress: number;
-  tone?: 'light' | 'dark';
+  tone?: 'light' | 'dark' | 'warm';
 }) {
   return (
     <View
-      style={[styles.track, tone === 'light' && styles.trackLight]}
+      style={[
+        styles.track,
+        tone === 'light' && styles.trackLight,
+        tone === 'warm' && styles.trackWarm,
+      ]}
       accessible
       accessibilityLabel={`${Math.round(progress * 100)} percent complete`}>
       <View style={[styles.trackFill, { width: `${Math.max(progress, 0.02) * 100}%` }]} />
@@ -277,17 +294,21 @@ function HistorySkeleton() {
 
 const styles = StyleSheet.create({
   content: { paddingHorizontal: SCREEN_GUTTER },
-  header: { paddingTop: spacing.sm, gap: spacing.xs },
+  header: { paddingTop: spacing.sm },
+  title: { marginTop: spacing.xxs, marginBottom: spacing.xs },
   search: { marginTop: spacing.lg },
-  filters: { flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap', marginVertical: spacing.md },
+  filters: { marginTop: spacing.md },
   groupLabel: { marginTop: spacing.md, marginBottom: spacing.sm },
 
   liveCard: {
     borderRadius: radii.xl,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accentSurface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.accentSoft,
     padding: spacing.lg,
     gap: spacing.md,
     marginBottom: spacing.sm,
+    ...shadows.card,
   },
   liveTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   liveThumb: { width: 48, height: 48, borderRadius: radii.md },
@@ -323,6 +344,7 @@ const styles = StyleSheet.create({
 
   track: { height: 5, borderRadius: radii.pill, backgroundColor: colors.border, overflow: 'hidden' },
   trackLight: { backgroundColor: 'rgba(255, 255, 255, 0.2)' },
+  trackWarm: { backgroundColor: colors.accentSoft },
   trackFill: { height: 5, borderRadius: radii.pill, backgroundColor: colors.accent },
 
   separator: { height: spacing.md },

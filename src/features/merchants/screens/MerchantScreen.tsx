@@ -4,12 +4,22 @@ import { useNavigation, useRoute, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { HorizontalList, QueryBoundary, Screen } from '../../../components/layout';
-import { AppText, Chip, Icon, SearchBar, Skeleton } from '../../../components/ui';
-import { BasketBar } from '../../basket/components/BasketBar';
 import {
+  AppText,
+  Icon,
+  SearchBar,
+  SectionHeader,
+  SegmentedControl,
+  Skeleton,
+} from '../../../components/ui';
+import { BasketBar } from '../../basket/components/BasketBar';
+import { DeliveryTimeSheet } from '../../basket/components/DeliveryTimeSheet';
+import {
+  deliverySlotChosen,
   lineAdded,
   lineQuantityChanged,
   selectBasketQuantities,
+  selectDeliverySlot,
 } from '../../basket/basketSlice';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { colors, SCREEN_GUTTER, spacing, surfaces } from '../../../theme';
@@ -21,6 +31,7 @@ import { MerchantHero } from '../components/MerchantHero';
 import { MenuItemRow } from '../components/MenuItemRow';
 import { GroceryTile } from '../components/GroceryTile';
 import { OfferCard, OFFER_CARD_WIDTH } from '../components/OfferCard';
+import { PopularCard, POPULAR_CARD_WIDTH } from '../components/PopularCard';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type Fulfilment = 'delivery' | 'pickup';
@@ -40,6 +51,9 @@ export function MerchantScreen() {
   const quantities = useAppSelector(selectBasketQuantities);
 
   const [activeSectionId, setActiveSectionId] = useState<SectionId>();
+  const [whenOpen, setWhenOpen] = useState(false);
+
+  const scheduledFor = useAppSelector(selectDeliverySlot);
   const [fulfilment, setFulfilment] = useState<Fulfilment>('delivery');
 
   const query = useGetMerchantQuery(params.merchantId);
@@ -54,6 +68,11 @@ export function MerchantScreen() {
   );
 
   const openBasket = useCallback(() => navigation.navigate('Basket'), [navigation]);
+
+  const openPopular = useCallback(
+    () => navigation.navigate('PopularItems', { merchantId: params.merchantId }),
+    [navigation, params.merchantId],
+  );
 
   /** Groceries have no options, so they go straight into the basket. */
   const addGrocery = useCallback(
@@ -163,7 +182,13 @@ export function MerchantScreen() {
                           />
 
                           <View style={styles.whenRow}>
-                            <Pill icon="clock" label="When?" value="Standard" trailing="chevronDown" />
+                            <Pill
+                              icon="clock"
+                              label="When?"
+                              value={scheduledFor?.label ?? 'Standard'}
+                              trailing="chevronDown"
+                              onPress={() => setWhenOpen(true)}
+                            />
                             {detail.acceptsReservations ? (
                               <Pill
                                 icon="calendar"
@@ -196,17 +221,38 @@ export function MerchantScreen() {
                       </View>
                     ) : null}
 
+                    {detail.popular.length > 0 ? (
+                      <View style={styles.popular}>
+                        <SectionHeader
+                          title="Most ordered"
+                          actionLabel="See all"
+                          onActionPress={openPopular}
+                        />
+                        <HorizontalList
+                          data={detail.popular}
+                          keyExtractor={product => product.id}
+                          itemWidth={POPULAR_CARD_WIDTH}
+                          renderItem={({ item }) => (
+                            <PopularCard
+                              product={item}
+                              quantityInBasket={quantities[item.id] ?? 0}
+                              onPress={openProduct}
+                              onAdd={product => addGrocery(detail, product)}
+                            />
+                          )}
+                        />
+                      </View>
+                    ) : null}
+
                     <View style={styles.tabs}>
-                      <HorizontalList
-                        data={sections}
-                        keyExtractor={section => section.id}
-                        renderItem={({ item }) => (
-                          <Chip
-                            label={item.name}
-                            selected={item.id === activeSection?.id}
-                            onPress={() => setActiveSectionId(item.id)}
-                          />
-                        )}
+                      <SegmentedControl
+                        options={sections.map(section => section.id)}
+                        value={activeSection?.id ?? sections[0]?.id}
+                        onChange={setActiveSectionId}
+                        getLabel={(id: string) =>
+                          sections.find(section => section.id === id)?.name ?? id
+                        }
+                        accessibilityLabel="Menu sections"
                       />
                     </View>
 
@@ -218,6 +264,17 @@ export function MerchantScreen() {
               />
 
               <BasketBar onPress={openBasket} />
+
+              <DeliveryTimeSheet
+                visible={whenOpen}
+                standardLabel={formatDeliveryWindow(
+                  detail.merchant.deliveryMinMinutes,
+                  detail.merchant.deliveryMaxMinutes,
+                )}
+                value={scheduledFor}
+                onChange={slot => dispatch(deliverySlotChosen(slot))}
+                onClose={() => setWhenOpen(false)}
+              />
             </>
           );
         }}
@@ -393,7 +450,8 @@ const styles = StyleSheet.create({
   offers: { paddingBottom: spacing.lg, gap: spacing.md },
   offersTitle: { paddingHorizontal: SCREEN_GUTTER },
 
-  tabs: { paddingBottom: spacing.lg },
+  popular: { paddingBottom: spacing.lg },
+  tabs: { paddingHorizontal: SCREEN_GUTTER, paddingBottom: spacing.lg },
   sectionTitle: { paddingHorizontal: SCREEN_GUTTER, paddingBottom: spacing.md },
 
   skeleton: { flex: 1 },

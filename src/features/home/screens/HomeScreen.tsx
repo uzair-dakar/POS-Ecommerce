@@ -3,7 +3,6 @@ import {
   FlatList,
   RefreshControl,
   StyleSheet,
-  useWindowDimensions,
   View,
   type ListRenderItem,
 } from 'react-native';
@@ -16,7 +15,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Screen, HorizontalList } from '../../../components/layout';
 import { AppText, Button, SectionHeader, Skeleton } from '../../../components/ui';
-import { BasketBar } from '../../basket/components/BasketBar';
 import { colors, SCREEN_GUTTER, spacing } from '../../../theme';
 import type { CategoryId, Chain, Merchant, Promotion } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -25,7 +23,7 @@ import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
 import { useGetHomeFeedQuery } from '../api/homeApi';
 import { CategoryRail } from '../components/CategoryRail';
 import { HomeHeader } from '../components/HomeHeader';
-import { HeroPromoCard } from '../components/HeroPromoCard';
+import { HeroCarousel } from '../components/HeroCarousel';
 import { QuickPromoCard } from '../components/QuickPromoCard';
 import { BrandCard, BRAND_CARD_WIDTH } from '../components/BrandCard';
 import { MerchantCard, MERCHANT_CARD_WIDTH } from '../components/MerchantCard';
@@ -53,7 +51,6 @@ const AnimatedFlatList = Animated.createAnimatedComponent(
 
 export function HomeScreen() {
   const navigation = useNavigation<Navigation>();
-  const { width } = useWindowDimensions();
   const { clearance } = useTabBarMetrics();
 
   // Kept on the UI thread so the sticky bar tracks the finger even while the
@@ -105,7 +102,6 @@ export function HomeScreen() {
     [navigation, openCategory],
   );
 
-  const openBasket = useCallback(() => navigation.navigate('Basket'), [navigation]);
   const openSearch = useCallback(() => navigation.navigate('Search'), [navigation]);
   const openAddressPicker = useCallback(() => navigation.navigate('Addresses'), [navigation]);
 
@@ -146,18 +142,7 @@ export function HomeScreen() {
           );
 
         case 'hero':
-          return (
-            <View style={styles.gutter}>
-              {feed.heroPromotions.map(promotion => (
-                <HeroPromoCard
-                  key={promotion.id}
-                  promotion={promotion}
-                  width={width - SCREEN_GUTTER * 2}
-                  onPress={openPromotion}
-                />
-              ))}
-            </View>
-          );
+          return <HeroCarousel promotions={feed.heroPromotions} onPress={openPromotion} />;
 
         case 'quickPromos':
           return (
@@ -243,7 +228,7 @@ export function HomeScreen() {
           );
       }
     },
-    [feed, selectedCategory, width, openCategory, openPromotion, openChain, renderMerchantRow, navigation],
+    [feed, selectedCategory, openCategory, openPromotion, openChain, renderMerchantRow, navigation],
   );
 
   if (isError) {
@@ -308,7 +293,6 @@ export function HomeScreen() {
         />
       ) : null}
 
-      <BasketBar onPress={openBasket} bottomOffset={clearance + spacing.md} />
     </Screen>
   );
 }
