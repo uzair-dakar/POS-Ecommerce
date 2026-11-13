@@ -19,7 +19,7 @@ export type HeroCarouselProps = {
   onPress: (promotion: Promotion) => void;
 };
 
-const HEIGHT = 208;
+const HEIGHT = 216;
 const GAP = spacing.md;
 
 /** How long each banner holds before the deck moves on. */

@@ -7,10 +7,12 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 import FastImage from 'react-native-fast-image';
+import Video, { ViewType } from 'react-native-video';
 
-import { AppText, GradientScrim, Icon } from '../../../components/ui';
+import { AppText, Dot, GradientScrim, Icon } from '../../../components/ui';
 import { colors, radii, shadows, spacing } from '../../../theme';
 import type { Promotion } from '../../../types';
+import { HERO_POSTER, HERO_VIDEO } from '../homeContent';
 
 export type HeroSlideProps = {
   promotion: Promotion;
@@ -51,7 +53,14 @@ function HeroSlideBase({
   isLast,
   onPress,
 }: HeroSlideProps) {
-  const inputRange = [(index - 1) * pageWidth, index * pageWidth, (index + 1) * pageWidth];
+  const inputRange = [
+    (index - 1) * pageWidth,
+    index * pageWidth,
+    (index + 1) * pageWidth,
+  ];
+
+  const video = HERO_VIDEO[promotion.id];
+  const poster = HERO_POSTER[promotion.id];
 
   const imageStyle = useAnimatedStyle(() => ({
     transform: [
@@ -82,15 +91,39 @@ function HeroSlideBase({
   const content = (
     <>
       <Animated.View style={[styles.imageWrapper, imageStyle]}>
-        <FastImage
-          source={{ uri: promotion.imageUrl }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        {video ? (
+          <>
+            {/* Held under the video so the card is never empty on the first
+                frame, or while playback recovers. */}
+            <FastImage
+              source={poster}
+              style={styles.image}
+              resizeMode="cover"
+            />
+            <Video
+              source={video}
+              style={{ width: cardWidth + PARALLAX * 2, height }}
+              resizeMode="cover"
+              repeat
+              muted
+              playInBackground={false}
+              ignoreSilentSwitch="obey"
+              disableFocus
+              controls={false}
+              viewType={ViewType.TEXTURE}
+            />
+          </>
+        ) : (
+          <FastImage
+            source={{ uri: promotion.imageUrl }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        )}
       </Animated.View>
 
-      <GradientScrim from="bottom" intensity={0.9} />
-      <GradientScrim from="left" intensity={0.5} />
+      <GradientScrim from="bottom" intensity={video ? 0.95 : 0.9} />
+      <GradientScrim from="left" intensity={video ? 0.85 : 0.5} />
 
       <View style={styles.content}>
         <View style={styles.eyebrowRow}>
@@ -104,6 +137,17 @@ function HeroSlideBase({
           {promotion.title}
         </AppText>
 
+        {promotion.subtitle ? (
+          <AppText
+            variant="caption"
+            color="textInverse"
+            numberOfLines={2}
+            style={styles.body}
+          >
+            {promotion.subtitle}
+          </AppText>
+        ) : null}
+
         <View style={styles.footer}>
           <View style={styles.cta}>
             <AppText variant="captionStrong" color="textInverse">
@@ -112,29 +156,46 @@ function HeroSlideBase({
             <Icon name="arrowRight" size={15} color={colors.textInverse} />
           </View>
 
-          {promotion.subtitle ? (
-            <View style={styles.meta}>
-              <Icon name="clock" size={13} color={colors.textInverse} />
-              <AppText variant="caption" color="textInverse" style={styles.metaText}>
-                {promotion.subtitle}
-              </AppText>
-            </View>
-          ) : null}
+          <View style={styles.meta}>
+            <Icon name="clock" size={13} color={colors.textInverse} />
+            <AppText
+              variant="label"
+              color="textInverse"
+              style={styles.metaText}
+            >
+              Under 30 min
+            </AppText>
+          </View>
         </View>
+      </View>
+
+      {/* Sits above the copy: it reports on the storefront, not the offer. */}
+      <View style={styles.liveBadge}>
+        <Dot size={7} color={colors.success} />
+        <AppText variant="eyebrow" color="textInverse" style={styles.liveLabel}>
+          Live nearby
+        </AppText>
       </View>
     </>
   );
 
   return (
-    <View style={{ width: cardWidth, marginRight: isLast ? 0 : pageWidth - cardWidth }}>
+    <View
+      style={{
+        width: cardWidth,
+        marginRight: isLast ? 0 : pageWidth - cardWidth,
+      }}
+    >
       <Animated.View
-        style={[styles.shadowHost, { width: cardWidth, height }, cardStyle]}>
+        style={[styles.shadowHost, { width: cardWidth, height }, cardStyle]}
+      >
         <View style={[styles.card, { width: cardWidth, height }]}>
           <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`${promotion.eyebrow}. ${promotion.title}. ${promotion.ctaLabel}`}
-          onPress={() => onPress(promotion)}
-          style={({ pressed }) => [styles.press, pressed && styles.pressed]}>
+            accessibilityRole="button"
+            accessibilityLabel={`${promotion.eyebrow}. ${promotion.title}. ${promotion.ctaLabel}`}
+            onPress={() => onPress(promotion)}
+            style={({ pressed }) => [styles.press, pressed && styles.pressed]}
+          >
             {content}
           </Pressable>
         </View>
@@ -164,7 +225,7 @@ const styles = StyleSheet.create({
     left: -PARALLAX,
     right: -PARALLAX,
   },
-  image: { width: '100%', height: '100%' },
+  image: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
 
   content: {
     flex: 1,
@@ -180,6 +241,23 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accentBright,
   },
   title: { maxWidth: '88%' },
+  body: { opacity: 0.72, maxWidth: '92%' },
+
+  liveBadge: {
+    position: 'absolute',
+    top: spacing.lg,
+    right: spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm - 2,
+    borderRadius: radii.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: 'rgba(6, 40, 63, 0.35)',
+  },
+  liveLabel: { opacity: 0.85 },
 
   footer: {
     flexDirection: 'row',
@@ -196,7 +274,17 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
     backgroundColor: colors.accent,
   },
-  meta: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
+  meta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radii.pill,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255, 255, 255, 0.18)',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+  },
   metaText: { opacity: 0.85 },
 
   pressed: { opacity: 0.94 },

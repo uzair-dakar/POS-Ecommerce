@@ -54,8 +54,9 @@ export function SignUpScreen() {
         phone: `${DIALLING_CODE}${values.phone.replace(/\D/g, '')}`,
       }).unwrap();
       dispatch(sessionStarted(session));
+      navigation.goBack();
     },
-    [signUp, dispatch],
+    [signUp, dispatch, navigation],
   );
 
   const form = useForm<SignUpValues>({

@@ -16,7 +16,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Screen, HorizontalList } from '../../../components/layout';
 import { AppText, Button, SectionHeader, Skeleton } from '../../../components/ui';
 import { colors, SCREEN_GUTTER, spacing } from '../../../theme';
-import type { CategoryId, Chain, Merchant, Promotion } from '../../../types';
+import type { Category, CategoryId, Chain, Merchant, Promotion } from '../../../types';
 import type { RootStackParamList } from '../../../navigation/types';
 import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
 
@@ -25,23 +25,37 @@ import { CategoryRail } from '../components/CategoryRail';
 import { HomeHeader } from '../components/HomeHeader';
 import { HeroCarousel } from '../components/HeroCarousel';
 import { QuickPromoCard } from '../components/QuickPromoCard';
+import { FeatureStrip } from '../components/FeatureStrip';
+import { EssentialsGrid } from '../components/EssentialsGrid';
+import { DishCategories } from '../components/DishCategories';
+import { FinalCta } from '../components/FinalCta';
 import { BrandCard, BRAND_CARD_WIDTH } from '../components/BrandCard';
 import { MerchantCard, MERCHANT_CARD_WIDTH } from '../components/MerchantCard';
 import { StickyCategoryHeader } from '../components/StickyCategoryHeader';
+import type { EssentialTile } from '../homeContent';
 
 /**
  * Each row of the feed is one item in a single virtualized list. Building the
  * screen this way — rather than a ScrollView of everything — means off-screen
  * sections are never mounted, so the feed stays cheap however long it grows.
+ *
+ * The order is the web storefront's, so a shopper who knows one client can
+ * find a row by where it sits in the other.
  */
 type Section =
   | { key: 'categories' }
   | { key: 'hero' }
   | { key: 'quickPromos' }
+  | { key: 'features' }
   | { key: 'brands' }
+  | { key: 'essentials' }
   | { key: 'popular' }
   | { key: 'fastest' }
-  | { key: 'markets' };
+  | { key: 'dishes' }
+  | { key: 'dinner' }
+  | { key: 'offers' }
+  | { key: 'markets' }
+  | { key: 'finalCta' };
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
@@ -59,7 +73,7 @@ export function HomeScreen() {
   const handleScroll = useAnimatedScrollHandler(event => {
     scrollY.value = event.contentOffset.y;
   });
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId>();
+  const [selectedSlug, setSelectedSlug] = useState<string>();
 
   const { data: feed, isLoading, isFetching, isError, refetch } = useGetHomeFeedQuery();
 
@@ -80,14 +94,36 @@ export function HomeScreen() {
     [navigation],
   );
 
-  /** Categories map onto the two merchant kinds the app can list today. */
+  /**
+   * Each tile carries the kind its merchants are browsed as, so the feed —
+   * not this screen — decides whether a category opens menus or a product
+   * grid. The id goes along so the list can ask the server for that category.
+   */
   const openCategory = useCallback(
-    (id: CategoryId) => {
-      setSelectedCategory(id);
-      navigation.navigate('MerchantList', {
-        kind: id === ('c_restaurants' as CategoryId) ? 'restaurant' : 'market',
-      });
+    (category: Category) => {
+      setSelectedSlug(category.slug);
+      navigation.navigate('MerchantList', { kind: category.kind, categoryId: category.id });
     },
+    [navigation],
+  );
+
+  /** The Essentials tiles are shops, so they open the market list. */
+  const openEssential = useCallback(
+    (tile: EssentialTile) =>
+      navigation.navigate('MerchantList', {
+        kind: 'market',
+        categoryId: String(tile.businessTypeID) as CategoryId,
+      }),
+    [navigation],
+  );
+
+  const openRestaurants = useCallback(
+    () => navigation.navigate('MerchantList', { kind: 'restaurant' }),
+    [navigation],
+  );
+
+  const openMarkets = useCallback(
+    () => navigation.navigate('MerchantList', { kind: 'market' }),
     [navigation],
   );
 
@@ -95,11 +131,18 @@ export function HomeScreen() {
     (promotion: Promotion) => {
       if (promotion.target.type === 'merchant') {
         navigation.navigate('Merchant', { merchantId: promotion.target.id });
-      } else {
-        openCategory(promotion.target.id);
+        return;
       }
+
+      const category = feed?.categories.find(
+        candidate => candidate.id === promotion.target.id,
+      );
+      navigation.navigate('MerchantList', {
+        kind: category?.kind ?? 'market',
+        categoryId: promotion.target.id,
+      });
     },
-    [navigation, openCategory],
+    [feed, navigation],
   );
 
   const openSearch = useCallback(() => navigation.navigate('Search'), [navigation]);
@@ -112,10 +155,16 @@ export function HomeScreen() {
       { key: 'categories' },
       { key: 'hero' },
       { key: 'quickPromos' },
+      { key: 'features' },
       { key: 'brands' },
+      { key: 'essentials' },
       { key: 'popular' },
       { key: 'fastest' },
+      { key: 'dishes' },
+      { key: 'dinner' },
+      { key: 'offers' },
       { key: 'markets' },
+      { key: 'finalCta' },
     ],
     [],
   );
@@ -123,6 +172,32 @@ export function HomeScreen() {
   const renderMerchantRow = useCallback<ListRenderItem<Merchant>>(
     ({ item }) => <MerchantCard merchant={item} onPress={openMerchant} onToggleFavourite={() => {}} />,
     [openMerchant],
+  );
+
+  /** The four restaurant rows differ only in their heading and their data. */
+  const merchantRow = useCallback(
+    (
+      eyebrow: string | undefined,
+      title: string,
+      data: readonly Merchant[],
+      onSeeAll: () => void,
+    ) => (
+      <>
+        <SectionHeader
+          eyebrow={eyebrow}
+          title={title}
+          actionLabel="See all"
+          onActionPress={onSeeAll}
+        />
+        <HorizontalList
+          data={data}
+          keyExtractor={merchant => merchant.id}
+          itemWidth={MERCHANT_CARD_WIDTH}
+          renderItem={renderMerchantRow}
+        />
+      </>
+    ),
+    [renderMerchantRow],
   );
 
   const renderSection = useCallback<ListRenderItem<Section>>(
@@ -134,11 +209,14 @@ export function HomeScreen() {
       switch (item.key) {
         case 'categories':
           return (
-            <CategoryRail
-              categories={feed.categories}
-              selectedId={selectedCategory}
-              onSelect={openCategory}
-            />
+            <>
+              <SectionHeader title="What are you looking for?" />
+              <CategoryRail
+                categories={feed.categories}
+                selectedSlug={selectedSlug}
+                onSelect={openCategory}
+              />
+            </>
           );
 
         case 'hero':
@@ -158,12 +236,16 @@ export function HomeScreen() {
             </View>
           );
 
+        case 'features':
+          return <FeatureStrip />;
+
         case 'brands':
           return (
             <>
               <SectionHeader
                 eyebrow="Curated for you"
                 title="Brands you love"
+                subtitle="The names you already know, delivered locally."
                 actionLabel="See all"
                 onActionPress={() => navigation.navigate('Chains')}
               />
@@ -176,59 +258,73 @@ export function HomeScreen() {
             </>
           );
 
-        case 'popular':
+        case 'essentials':
           return (
             <>
-              <SectionHeader
-                title="Popular restaurants"
-                actionLabel="See all"
-                onActionPress={() => navigation.navigate('MerchantList', { kind: 'restaurant' })}
-              />
-              <HorizontalList
-                data={feed.popularRestaurants}
-                keyExtractor={merchant => merchant.id}
-                itemWidth={MERCHANT_CARD_WIDTH}
-                renderItem={renderMerchantRow}
-              />
+              <SectionHeader title="Essentials" />
+              <EssentialsGrid onSelect={openEssential} />
             </>
+          );
+
+        case 'popular':
+          return merchantRow(
+            'Table for one, two, or the whole crew',
+            'Popular near you',
+            feed.popularRestaurants,
+            openRestaurants,
           );
 
         case 'fastest':
+          return merchantRow(
+            'On your table in no time',
+            'Fastest delivery',
+            feed.fastestDelivery,
+            openRestaurants,
+          );
+
+        case 'dishes':
           return (
             <>
-              <SectionHeader
-                title="Fastest delivery"
-                actionLabel="See all"
-                onActionPress={() => navigation.navigate('MerchantList', { kind: 'restaurant' })}
-              />
-              <HorizontalList
-                data={feed.fastestDelivery}
-                keyExtractor={merchant => merchant.id}
-                itemWidth={MERCHANT_CARD_WIDTH}
-                renderItem={renderMerchantRow}
-              />
+              <SectionHeader title="Categories" />
+              <DishCategories onSelect={openRestaurants} />
             </>
           );
 
-        case 'markets':
-          return (
-            <>
-              <SectionHeader
-                title="Fill your basket"
-                actionLabel="See all"
-                onActionPress={() => navigation.navigate('MerchantList', { kind: 'market' })}
-              />
-              <HorizontalList
-                data={feed.markets}
-                keyExtractor={merchant => merchant.id}
-                itemWidth={MERCHANT_CARD_WIDTH}
-                renderItem={renderMerchantRow}
-              />
-            </>
+        case 'dinner':
+          return merchantRow(
+            "Tonight's table, sorted",
+            'Dinner near you',
+            feed.dinner,
+            openRestaurants,
           );
+
+        case 'offers':
+          return merchantRow(
+            'Good food, better price',
+            'Offers near you',
+            feed.offers,
+            openRestaurants,
+          );
+
+        case 'markets':
+          return merchantRow(undefined, 'Fill your basket', feed.markets, openMarkets);
+
+        case 'finalCta':
+          return <FinalCta onPress={openMarkets} />;
       }
     },
-    [feed, selectedCategory, openCategory, openPromotion, openChain, renderMerchantRow, navigation],
+    [
+      feed,
+      selectedSlug,
+      openCategory,
+      openEssential,
+      openPromotion,
+      openChain,
+      openRestaurants,
+      openMarkets,
+      merchantRow,
+      navigation,
+    ],
   );
 
   if (isError) {
@@ -287,7 +383,7 @@ export function HomeScreen() {
           scrollY={scrollY}
           categories={feed.categories}
           deliverTo={feed.deliverTo}
-          selectedId={selectedCategory}
+          selectedSlug={selectedSlug}
           onSelect={openCategory}
           onChangeAddress={openAddressPicker}
         />
@@ -304,7 +400,7 @@ function HomeFeedSkeleton() {
   return (
     <View style={[styles.gutter, styles.skeleton]}>
       <Skeleton height={64} radius={14} />
-      <Skeleton height={190} radius={20} />
+      <Skeleton height={216} radius={20} />
       <View style={styles.quickPromoRow}>
         <Skeleton height={148} radius={14} style={styles.flex} />
         <Skeleton height={148} radius={14} style={styles.flex} />

@@ -2,12 +2,14 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { selectIsAuthenticated } from '../features/auth/authSlice';
-import { useAppSelector } from '../store/hooks';
 import { colors } from '../theme';
-import { AuthNavigator } from './AuthNavigator';
 import { MainTabNavigator } from './MainTabNavigator';
 import type { RootStackParamList } from './types';
+
+import { PlaceholderScreen } from '../components/layout/PlaceholderScreen';
+import { OnboardingScreen } from '../features/auth/screens/OnboardingScreen';
+import { SignInScreen } from '../features/auth/screens/SignInScreen';
+import { SignUpScreen } from '../features/auth/screens/SignUpScreen';
 
 import { ChainScreen } from '../features/merchants/screens/ChainScreen';
 import { ChainsScreen } from '../features/merchants/screens/ChainsScreen';
@@ -41,27 +43,31 @@ const navigationTheme: Theme = {
   },
 };
 
+const ForgotPasswordScreen = () => (
+  <PlaceholderScreen
+    title="Reset your password"
+    note="We'll email you a link to choose a new one."
+  />
+);
+
 /**
- * Which world the user is in. The splash that covers rehydration is handled a
- * level up by PersistGate, so by the time this renders the stored session —
- * if there is one — has already been read back.
+ * One stack for the whole session.
+ *
+ * The app opens straight onto the feed: browsing a storefront needs no
+ * account, so there is no signed-out world to swap in. Signing in is a sheet
+ * raised over whatever the user was doing — and dismissed back to it — which
+ * is also why signing out leaves them where they are instead of ejecting them
+ * to a welcome screen.
  */
 export function RootNavigator() {
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-
   return (
     <NavigationContainer theme={navigationTheme}>
-      {isAuthenticated ? <SignedInStack /> : <AuthNavigator />}
+      <AppStack />
     </NavigationContainer>
   );
 }
 
-/**
- * Everything behind sign-in. Swapping navigators rather than navigating means
- * signing out unmounts the whole tree — no signed-in screen can survive in
- * the back stack, and no "go back into the app" gesture can reach one.
- */
-function SignedInStack() {
+function AppStack() {
   return (
     <Stack.Navigator
       screenOptions={{
@@ -70,6 +76,13 @@ function SignedInStack() {
         animation: 'slide_from_right',
       }}>
       <Stack.Screen name="Main" component={MainTabNavigator} />
+
+      <Stack.Group screenOptions={{ presentation: 'modal', animation: 'slide_from_bottom' }}>
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      </Stack.Group>
 
       <Stack.Screen
         name="Search"

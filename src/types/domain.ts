@@ -16,8 +16,19 @@ export type MerchantKind = 'restaurant' | 'market';
 
 export type Category = {
   id: CategoryId;
+  /**
+   * Unique, stable key for the tile itself.
+   *
+   * Two tiles can share an `id`: the storefront shows more categories than the
+   * backend has business types for, so a couple of them resolve to the same
+   * one. The slug is what lists and selection are keyed on.
+   */
+  slug: string;
   name: string;
-  imageUrl: string;
+  /** Omitted when the tile's artwork ships with the app rather than the API. */
+  imageUrl?: string;
+  /** Whether its merchants are browsed as menus or as a product grid. */
+  kind: MerchantKind;
 };
 
 export type Merchant = {
@@ -134,7 +145,17 @@ export type MerchantDetail = {
 /** A branch of a chain, as listed on the brand screen. */
 export type ChainLocation = {
   merchant: Merchant;
+  /**
+   * The branch's own label — "Main Outlet", "KickStart Outlet".
+   *
+   * Separate from `merchant.name`, which carries the brand because a merchant
+   * card can turn up anywhere. On a brand's own page the brand is already the
+   * title, so repeating it in every row only crowds out the part that differs.
+   */
+  name: string;
   address: string;
+  /** Set for the branch the business treats as its main one. */
+  tag?: string;
 };
 
 export type ChainDetail = {
@@ -242,5 +263,7 @@ export type HomeFeed = {
   brands: readonly Chain[];
   popularRestaurants: readonly Merchant[];
   fastestDelivery: readonly Merchant[];
+  dinner: readonly Merchant[];
+  offers: readonly Merchant[];
   markets: readonly Merchant[];
 };

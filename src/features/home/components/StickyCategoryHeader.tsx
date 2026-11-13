@@ -10,14 +10,15 @@ import Animated, {
 import { AppImage, AppText, Icon } from '../../../components/ui';
 import { HorizontalList } from '../../../components/layout';
 import { colors, radii, shadows, spacing } from '../../../theme';
-import type { Category, CategoryId } from '../../../types';
+import type { Category } from '../../../types';
+import { CATEGORY_ART } from '../homeContent';
 
 export type StickyCategoryHeaderProps = {
   scrollY: SharedValue<number>;
   categories: readonly Category[];
   deliverTo: string;
-  selectedId?: CategoryId;
-  onSelect: (id: CategoryId) => void;
+  selectedSlug?: string;
+  onSelect: (category: Category) => void;
   onChangeAddress: () => void;
 };
 
@@ -40,7 +41,7 @@ function StickyCategoryHeaderBase({
   scrollY,
   categories,
   deliverTo,
-  selectedId,
+  selectedSlug,
   onSelect,
   onChangeAddress,
 }: StickyCategoryHeaderProps) {
@@ -62,25 +63,28 @@ function StickyCategoryHeaderBase({
 
   const renderTab = useCallback<ListRenderItem<Category>>(
     ({ item }) => {
-      const isSelected = item.id === selectedId;
+      const isSelected = item.slug === selectedSlug;
+      const art = CATEGORY_ART[item.slug];
+      const source = art ?? (item.imageUrl ? { uri: item.imageUrl } : undefined);
+
       return (
         <Pressable
           accessibilityRole="tab"
           accessibilityState={{ selected: isSelected }}
-          onPress={() => onSelect(item.id)}
+          onPress={() => onSelect(item)}
           style={({ pressed }) => [
             styles.tab,
             isSelected && styles.tabSelected,
             pressed && styles.pressed,
           ]}>
-          <AppImage source={{ uri: item.imageUrl }} style={styles.tabImage} />
+          {source ? <AppImage source={source} style={styles.tabImage} /> : null}
           <AppText variant="captionStrong" color={isSelected ? 'textInverse' : 'text'}>
             {item.name}
           </AppText>
         </Pressable>
       );
     },
-    [selectedId, onSelect],
+    [selectedSlug, onSelect],
   );
 
   return (
@@ -98,7 +102,7 @@ function StickyCategoryHeaderBase({
         <HorizontalList
           data={categories}
           renderItem={renderTab}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.slug}
           gap={spacing.sm}
         />
       </View>

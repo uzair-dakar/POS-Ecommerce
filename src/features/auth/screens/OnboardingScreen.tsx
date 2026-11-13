@@ -28,7 +28,8 @@ export function OnboardingScreen() {
 
   const browseAsGuest = useCallback(() => {
     dispatch(guestSessionStarted());
-  }, [dispatch]);
+    navigation.goBack();
+  }, [dispatch, navigation]);
 
   return (
     <Screen background="primaryDark" statusBarStyle="light-content" edges={['top', 'bottom']}>

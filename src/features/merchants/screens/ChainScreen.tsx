@@ -21,7 +21,7 @@ import { LocationRow } from '../components/LocationRow';
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
 
 /** Filters the design offers above the locations list. */
-const FILTERS = ['All', 'Open now', 'Fastest', 'Free delivery'] as const;
+const FILTERS = ['All', 'Open now', 'Fast delivery'] as const;
 type Filter = (typeof FILTERS)[number];
 
 export function ChainScreen() {
@@ -58,10 +58,8 @@ export function ChainScreen() {
             switch (filter) {
               case 'Open now':
                 return merchant.isOpen;
-              case 'Fastest':
+              case 'Fast delivery':
                 return merchant.deliveryMaxMinutes <= 30;
-              case 'Free delivery':
-                return merchant.deliveryFee === 0;
               default:
                 return true;
             }
@@ -132,9 +130,17 @@ export function ChainScreen() {
                       accessibilityLabel="Filter locations"
                     />
 
-                    <AppText variant="h2" style={styles.listTitle}>
-                      Nearby locations
-                    </AppText>
+                    <View style={styles.listHeading}>
+                      <AppText variant="eyebrow" color="textAccent">
+                        Store locations
+                      </AppText>
+                      <AppText variant="h2">Find your closest {detail.chain.name}</AppText>
+                      <AppText variant="caption" color="textMuted">
+                        {detail.locations.length === 1
+                          ? '1 outlet available'
+                          : `${detail.locations.length} outlets available`}
+                      </AppText>
+                    </View>
                   </View>
                 </View>
               }
@@ -231,7 +237,7 @@ const styles = StyleSheet.create({
     marginVertical: spacing.xs,
     backgroundColor: colors.divider,
   },
-  listTitle: { marginTop: spacing.sm },
+  listHeading: { marginTop: spacing.sm, gap: spacing.xs },
 
   rowGutter: { paddingHorizontal: SCREEN_GUTTER },
   separator: { height: spacing.md },

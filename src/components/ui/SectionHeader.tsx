@@ -7,12 +7,20 @@ import { Icon } from './Icon';
 export type SectionHeaderProps = {
   title: string;
   eyebrow?: string;
+  /** A line under the title, for sections that need one. */
+  subtitle?: string;
   actionLabel?: string;
   onActionPress?: () => void;
 };
 
 /** "CURATED FOR YOU / Brands you love ........ See all ›" */
-function SectionHeaderBase({ title, eyebrow, actionLabel, onActionPress }: SectionHeaderProps) {
+function SectionHeaderBase({
+  title,
+  eyebrow,
+  subtitle,
+  actionLabel,
+  onActionPress,
+}: SectionHeaderProps) {
   return (
     <View style={styles.wrapper}>
       {eyebrow ? (
@@ -41,6 +49,12 @@ function SectionHeaderBase({ title, eyebrow, actionLabel, onActionPress }: Secti
           </Pressable>
         ) : null}
       </View>
+
+      {subtitle ? (
+        <AppText variant="caption" color="textMuted">
+          {subtitle}
+        </AppText>
+      ) : null}
     </View>
   );
 }

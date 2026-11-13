@@ -1,7 +1,8 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
-import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { env } from '../../config/env';
 import { resolveMockHandler } from '../mock/handlers';
+import { resolveGatewayHandler } from '../remote/gateway';
+import { toApiError } from '../remote/httpClient';
 
 export type ApiError = {
   status: number;
@@ -15,59 +16,52 @@ export type ApiRequest = {
   params?: Record<string, unknown>;
 };
 
-const httpBaseQuery = fetchBaseQuery({
-  baseUrl: env.apiBaseUrl,
-  prepareHeaders: headers => {
-    headers.set('accept', 'application/json');
-    return headers;
-  },
-});
-
 const delay = (ms: number) =>
   new Promise<void>(resolve => {
     setTimeout(() => resolve(), ms);
   });
 
+/** The signed-in customer's token, read straight off the auth slice. */
+const tokenFrom = (state: unknown): string | null =>
+  (state as { auth?: { session?: { accessToken?: string } } })?.auth?.session?.accessToken ?? null;
+
 /**
  * One swappable transport for the whole app.
  *
- * With `env.useMocks` on it resolves from local fixtures after a short delay,
- * so every screen exercises its real loading and error states. Turning the
- * flag off routes the identical requests at the HTTP backend — no endpoint,
- * component or hook needs to change.
+ * `env.dataSource` decides where a request is answered:
+ *
+ * - `mock` resolves it from local fixtures after a short delay, so every
+ *   screen exercises its real loading and error states.
+ * - `live` hands it to the gateway, which assembles it from the POS backend's
+ *   endpoints and maps the response into the app's domain types.
+ *
+ * Both sides answer the same app-level URLs ("merchants/:id"), so no endpoint,
+ * hook or component changes when the flag moves.
  */
-export const appBaseQuery: BaseQueryFn<ApiRequest, unknown, ApiError> = async (
-  args,
-  api,
-  extraOptions,
-) => {
-  if (env.useMocks) {
+export const appBaseQuery: BaseQueryFn<ApiRequest, unknown, ApiError> = async (args, api) => {
+  if (env.dataSource === 'mock') {
     await delay(env.mockLatencyMs);
     const resolved = resolveMockHandler(args);
     if (!resolved) {
       return { error: { status: 404, message: `No mock handler for "${args.url}"` } };
     }
-    // Handlers receive the whole request so they can branch on the body of a
-    // POST exactly as the real endpoint will.
     return resolved.handler(resolved.request);
   }
 
-  const result = await httpBaseQuery(
-    { url: args.url, method: args.method ?? 'GET', body: args.body, params: args.params },
-    api,
-    extraOptions,
-  );
-
-  if (result.error) {
+  const resolved = resolveGatewayHandler(args);
+  if (!resolved) {
     return {
       error: {
-        status: typeof result.error.status === 'number' ? result.error.status : 500,
-        message:
-          (result.error.data as { message?: string } | undefined)?.message ??
-          'Something went wrong. Please try again.',
+        status: 501,
+        message: `"${args.url}" is not wired to the backend yet.`,
       },
     };
   }
 
-  return { data: result.data };
+  try {
+    const data = await resolved.handler(resolved.request, { token: tokenFrom(api.getState()) });
+    return { data };
+  } catch (error) {
+    return { error: toApiError(error) };
+  }
 };

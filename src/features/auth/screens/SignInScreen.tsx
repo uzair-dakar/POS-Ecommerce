@@ -35,8 +35,9 @@ export function SignInScreen() {
     async (values: SignInValues) => {
       const session = await signIn(values).unwrap();
       dispatch(sessionStarted(session));
+      navigation.goBack();
     },
-    [signIn, dispatch],
+    [signIn, dispatch, navigation],
   );
 
   const form = useForm<SignInValues>({

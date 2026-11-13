@@ -58,7 +58,7 @@ export function MerchantListScreen({ kind: kindProp }: MerchantListScreenProps =
   // pushed onto the stack it needs the reverse of both.
   const isTab = kindProp !== undefined;
   const kind = kindProp ?? route.params?.kind ?? 'restaurant';
-  const query = useGetMerchantsQuery({ kind });
+  const query = useGetMerchantsQuery({ kind, categoryId: route.params?.categoryId });
   const copy = COPY[kind];
 
   const openMerchant = useCallback(

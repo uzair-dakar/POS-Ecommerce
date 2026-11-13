@@ -43,18 +43,34 @@ into `src/components/ui`.
 Only `basket` is persisted to disk (`redux-persist`). Server data is
 deliberately not persisted so it can never be shown stale after a relaunch.
 
-## Swapping mocks for the real API
+## Talking to the POS backend
 
-`src/config/env.ts` has one flag:
+The backend is RPC-shaped: `POST /HomePage/GetAllStoresWithOutlets`, fields
+like `storeRequestID`, prices as decimal euros. The app is not. Between them
+sits one translation layer, so no screen ever sees a backend field name:
 
-```ts
-useMocks: true
+```
+src/config/env.ts              URLs, tenant headers, data source — nothing else names them
+src/services/remote/
+  endpoints.ts                 every backend path, named once
+  httpClient.ts                the only fetch: headers, token, timeout, error shape
+  dto.ts                       the backend's shapes, as received
+  mappers/                     DTO -> domain types (the business logic)
+  staticContent.ts             what the storefront needs and the API has no endpoint for
+  gateway.ts                   app resource -> backend call(s) + mapper
 ```
 
-With it on, `services/api/baseQuery.ts` resolves every request from
-`services/mock/handlers.ts` after a short delay, so each screen exercises its
-real loading and error states. Turning it off sends the identical requests to
-`apiBaseUrl`. No component, hook or endpoint changes.
+`src/config/env.ts` picks where requests are answered:
+
+```ts
+dataSource: 'live'   // 'mock' | 'live'
+```
+
+`mock` resolves from `services/mock/handlers.ts` after a short delay so every
+screen exercises its loading and error states. `live` hands the same
+app-level request to `remote/gateway.ts`. Both answer the identical URLs
+(`merchants/:id`), so no endpoint, hook or component changes when the flag
+moves.
 
 Adding an endpoint:
 
@@ -71,8 +87,22 @@ export const ordersApi = apiSlice.injectEndpoints({
 export const { useGetOrdersQuery } = ordersApi;
 ```
 
-Then add a matching `'orders'` entry to the mock handlers. Nothing in
-`apiSlice.ts` needs editing.
+Then add an `'orders'` entry to the mock handlers and, when the backend can
+serve it, to `remote/gateway.ts`. Nothing in `apiSlice.ts` is edited.
+
+**Rules that keep the layer honest.** Only `mappers/` may import `dto.ts`.
+Only `httpClient.ts` may call `fetch`. Only `gateway.ts` may name an entry in
+`endpoints.ts`. A field the backend does not return yet is defaulted in a
+mapper with a comment, never faked in a screen.
+
+**Ids carry what the backend needs back.** A storefront merchant is an outlet
+of a store, so `MerchantId` encodes `businessTypeID.storeRequestID.outletID`
+and `ProductId` encodes its merchant. Screens and routes keep passing one
+opaque string; the gateway decodes it when it calls out.
+
+**Mapping is tested, not assumed.** `__tests__/remoteMappers.test.ts` pins the
+money conversion, the id round-trip, outlet filtering, menu sections and the
+auth and reservation mapping.
 
 ## Styling
 

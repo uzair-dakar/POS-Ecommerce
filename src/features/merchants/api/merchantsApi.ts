@@ -1,5 +1,6 @@
 import { apiSlice } from '../../../services/api';
 import type {
+  CategoryId,
   Chain,
   ChainDetail,
   ChainId,
@@ -24,7 +25,10 @@ export type SearchResults = {
 
 export const merchantsApi = apiSlice.injectEndpoints({
   endpoints: builder => ({
-    getMerchants: builder.query<readonly Merchant[], { kind?: MerchantKind }>({
+    getMerchants: builder.query<
+      readonly Merchant[],
+      { kind?: MerchantKind; categoryId?: CategoryId }
+    >({
       query: params => ({ url: 'merchants', params }),
       providesTags: ['Merchant'],
     }),

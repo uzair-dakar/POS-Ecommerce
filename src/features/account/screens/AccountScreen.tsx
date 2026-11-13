@@ -8,7 +8,7 @@ import { AppText, Button, Icon } from '../../../components/ui';
 import { colors, radii, SCREEN_GUTTER, shadows, spacing } from '../../../theme';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { useTabBarMetrics } from '../../../navigation/tabBarMetrics';
-import { selectIsGuest, selectUser, signedOut } from '../../auth/authSlice';
+import { selectUser, signedOut } from '../../auth/authSlice';
 import { useGetOrdersQuery } from '../../orders/api/ordersApi';
 import { isOrderLive } from '../../orders/orderStatus';
 import type { RootStackParamList } from '../../../navigation/types';
@@ -33,7 +33,6 @@ export function AccountScreen() {
   const { clearance } = useTabBarMetrics();
 
   const user = useAppSelector(selectUser);
-  const isGuest = useAppSelector(selectIsGuest);
 
   const { data: orders } = useGetOrdersQuery();
   const liveOrderCount = useMemo(
@@ -42,6 +41,7 @@ export function AccountScreen() {
   );
 
   const handleSignOut = useCallback(() => dispatch(signedOut()), [dispatch]);
+  const goToSignIn = useCallback(() => navigation.navigate('SignIn'), [navigation]);
   const goToOrders = useCallback(
     () => navigation.navigate('Main', { screen: 'OrdersTab' }),
     [navigation],
@@ -79,7 +79,7 @@ export function AccountScreen() {
           </View>
         </View>
 
-        {isGuest ? (
+        {user ? null : (
           <View style={styles.prompt}>
             <View style={styles.promptCopy}>
               <Icon name="bolt" size={16} color={colors.accentPressed} />
@@ -87,9 +87,9 @@ export function AccountScreen() {
                 Sign in to keep your orders, addresses and cards on every device.
               </AppText>
             </View>
-            <Button label="Sign in" size="md" onPress={handleSignOut} />
+            <Button label="Sign in" size="md" onPress={goToSignIn} />
           </View>
-        ) : null}
+        )}
 
         <Group title="Orders & delivery">
           <SettingsRow
@@ -115,14 +115,14 @@ export function AccountScreen() {
           <SettingsRow icon="lock" label="Privacy & terms" last onPress={notYet} />
         </Group>
 
-        {isGuest ? null : (
+        {user ? (
           <Button
             label="Log out"
             variant="outline"
             style={styles.signOut}
             onPress={handleSignOut}
           />
-        )}
+        ) : null}
 
         <AppText variant="caption" color="textMuted" align="center" style={styles.version}>
           Buzztill · v1.0.0

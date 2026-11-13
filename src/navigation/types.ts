@@ -1,5 +1,6 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 import type {
+  CategoryId,
   ChainId,
   MerchantId,
   MerchantKind,
@@ -8,13 +9,14 @@ import type {
   SeatingKind,
 } from '../types';
 
-/** The signed-out world. Mounted instead of the root stack, never inside it. */
-export type AuthStackParamList = {
-  Onboarding: undefined;
-  SignIn: undefined;
-  SignUp: undefined;
-  ForgotPassword: undefined;
-};
+/**
+ * The auth routes. They are part of the root stack and presented over the
+ * app, because browsing never requires an account — only ordering does.
+ */
+export type AuthStackParamList = Pick<
+  RootStackParamList,
+  'Onboarding' | 'SignIn' | 'SignUp' | 'ForgotPassword'
+>;
 
 /** Bottom tabs — the four persistent destinations from the design. */
 export type MainTabParamList = {
@@ -32,11 +34,18 @@ export type MainTabParamList = {
 export type RootStackParamList = {
   Main: NavigatorScreenParams<MainTabParamList>;
 
+  // Account. Presented over whatever the user was doing, so signing in from
+  // a basket returns to that basket rather than restarting the app.
+  Onboarding: undefined;
+  SignIn: undefined;
+  SignUp: undefined;
+  ForgotPassword: undefined;
+
   // Discovery
   Search: undefined;
   Chains: undefined;
   Chain: { chainId: ChainId };
-  MerchantList: { kind: MerchantKind };
+  MerchantList: { kind: MerchantKind; categoryId?: CategoryId };
   Merchant: { merchantId: MerchantId };
   PopularItems: { merchantId: MerchantId };
   Product: { merchantId: MerchantId; productId: ProductId };
@@ -74,11 +83,11 @@ export type RootStackParamList = {
 
 /**
  * Makes `navigation.navigate` fully typed without importing the list
- * everywhere. Both stacks are listed because only one of them is mounted at a
- * time — the auth stack before sign-in, the root stack after.
+ * everywhere. One stack is mounted for the whole session; the auth routes are
+ * part of it.
  */
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList, AuthStackParamList {}
+    interface RootParamList extends RootStackParamList {}
   }
 }

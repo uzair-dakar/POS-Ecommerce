@@ -136,11 +136,11 @@ const byId = (id: string) => MOCK_MERCHANTS.find(m => m.id === id)!;
 export const MOCK_HOME_FEED: HomeFeed = {
   deliverTo: 'Valletta',
   categories: [
-    { id: 'c_restaurants' as CategoryId, name: 'Restaurants', imageUrl: img('1414235077428-338989a2e8c0', 200) },
-    { id: 'c_groceries' as CategoryId, name: 'Groceries', imageUrl: img('1542838132-92c53300491e', 200) },
-    { id: 'c_health' as CategoryId, name: 'Health', imageUrl: img('1587854692152-cbe660dbde88', 200) },
-    { id: 'c_beauty' as CategoryId, name: 'Beauty', imageUrl: img('1596462502278-27bfdc403348', 200) },
-    { id: 'c_drinks' as CategoryId, name: 'Drinks', imageUrl: img('1544145945-f90425340c7e', 200) },
+    { id: 'c_restaurants' as CategoryId, slug: 'restaurants', name: 'Restaurants', imageUrl: img('1414235077428-338989a2e8c0', 200), kind: 'restaurant' },
+    { id: 'c_groceries' as CategoryId, slug: 'groceries', name: 'Groceries', imageUrl: img('1542838132-92c53300491e', 200), kind: 'market' },
+    { id: 'c_health' as CategoryId, slug: 'health', name: 'Health', imageUrl: img('1587854692152-cbe660dbde88', 200), kind: 'market' },
+    { id: 'c_beauty' as CategoryId, slug: 'beauty', name: 'Beauty', imageUrl: img('1596462502278-27bfdc403348', 200), kind: 'market' },
+    { id: 'c_drinks' as CategoryId, slug: 'drinks', name: 'Drinks', imageUrl: img('1544145945-f90425340c7e', 200), kind: 'market' },
   ],
   heroPromotions: [
     {
@@ -214,6 +214,8 @@ export const MOCK_HOME_FEED: HomeFeed = {
   ],
   popularRestaurants: [byId('m_copper_kettle'), byId('m_saigon_alley')],
   fastestDelivery: [byId('m_malted_oat'), byId('m_casa_pomodoro')],
+  dinner: [byId('m_casa_pomodoro'), byId('m_copper_kettle')],
+  offers: [byId('m_saigon_alley'), byId('m_malted_oat')],
   markets: [byId('m_buzztill_qormi'), byId('m_welbees'), byId('m_little_greens')],
 };
 

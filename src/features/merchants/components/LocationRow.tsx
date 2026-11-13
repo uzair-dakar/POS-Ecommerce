@@ -12,13 +12,13 @@ export type LocationRowProps = {
 
 /** One branch in a brand's locations list. Closed branches read as disabled. */
 function LocationRowBase({ location, onPress }: LocationRowProps) {
-  const { merchant, address } = location;
+  const { merchant, name, address, tag } = location;
   const handlePress = useCallback(() => onPress(location), [onPress, location]);
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={merchant.name}
+      accessibilityLabel={name}
       accessibilityState={{ disabled: !merchant.isOpen }}
       disabled={!merchant.isOpen}
       onPress={handlePress}
@@ -36,16 +36,25 @@ function LocationRowBase({ location, onPress }: LocationRowProps) {
 
       <View style={styles.body}>
         <View style={styles.titleRow}>
-          <AppText variant="h3" color={merchant.isOpen ? 'text' : 'textSubtle'} numberOfLines={1}>
-            {merchant.name}
+          {/* Without a shrink the long branch names push the rating off the
+              card's right edge instead of truncating. */}
+          <AppText
+            variant="h3"
+            color={merchant.isOpen ? 'text' : 'textSubtle'}
+            numberOfLines={1}
+            style={styles.title}>
+            {name}
           </AppText>
-          {merchant.isOpen ? (
-            <Rating value={merchant.rating} />
-          ) : (
-            <AppText variant="caption" color="textSubtle">
-              Opens 9:00 AM
-            </AppText>
-          )}
+
+          <View style={styles.trailing}>
+            {merchant.isOpen ? (
+              <Rating value={merchant.rating} />
+            ) : (
+              <AppText variant="caption" color="textSubtle">
+                Opens 9:00 AM
+              </AppText>
+            )}
+          </View>
         </View>
 
         <AppText variant="caption" color="textSubtle" numberOfLines={1}>
@@ -60,6 +69,7 @@ function LocationRowBase({ location, onPress }: LocationRowProps) {
                 {formatDeliveryWindow(merchant.deliveryMinMinutes, merchant.deliveryMaxMinutes)}
               </AppText>
             </View>
+            {tag ? <Badge label={tag} tone="neutral" /> : null}
             {merchant.offerLabel ? <Badge label={merchant.offerLabel} tone="accent" /> : null}
           </View>
         ) : null}
@@ -92,6 +102,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.sm,
   },
+  title: { flexShrink: 1 },
+  trailing: { flexShrink: 0 },
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, flexWrap: 'wrap' },
   time: {
     flexDirection: 'row',

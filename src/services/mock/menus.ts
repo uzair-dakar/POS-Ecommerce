@@ -13,6 +13,7 @@ import type {
   ProductId,
   ProductOptionGroup,
   SectionId,
+  ChainLocation,
 } from '../../types';
 import { MOCK_MERCHANTS, img } from './data';
 
@@ -710,7 +711,10 @@ type LocationSeed = {
 
 const location =
   (photoId: string, tagline: string, tag: string) =>
-  (seed: LocationSeed): { merchant: Merchant; address: string } => ({
+  (seed: LocationSeed): ChainLocation => ({
+    // The fixtures name a branch "KFC Valletta"; a brand page wants the part
+    // that is not the brand.
+    name: seed.name.split(' ').pop() ?? seed.name,
     merchant: {
       id: seed.id as MerchantId,
       kind: 'restaurant',
